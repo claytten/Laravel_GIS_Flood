@@ -13,7 +13,6 @@
 * `php aritsan key:generate`
 * `php artisan migrate --seed`
 * `php artisan storage:link`
-* `php artisan migrate --seed`
 
 ## Notes
  * `This is my custom template login,register,role with spatie permission`
