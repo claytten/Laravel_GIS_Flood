@@ -44,7 +44,7 @@
                     @endif
 
                     @if(Auth::guard('employee')->user()->can('maps-list'))
-                    <a class="mdl-navigation__link {{ !empty($menu) ? ($menu == "maps" ? 'mdl-navigation__link--current' : '') : '' }}" href="{{ route('admin.dashboard')}}">
+                    <a class="mdl-navigation__link {{ !empty($menu) ? ($menu == "maps" ? 'mdl-navigation__link--current' : '') : '' }}" href="{{ route('admin.view.index')}}">
                         <i class="material-icons" role="presentation">map</i>
                         maps
                     </a>

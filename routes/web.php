@@ -28,6 +28,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['employee'], 'as' => 'admin.
             Route::resource('/account/admin', 'AdminController', ['except' => ['show'] ] );
             Route::resource('/account/role', 'RoleController');
         });
+
+        Route::namespace('Maps')->group(function () {
+            Route::resource('/maps/view', 'MapController',['only' => ['index']]);
+            Route::resource('/maps/api', 'MapApiController',['only' => ['index','show','update','destroy','store']]);
+        });
     });
 });
 
