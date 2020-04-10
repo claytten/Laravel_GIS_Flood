@@ -14,10 +14,16 @@ class Field extends Model
      * @var array
      */
     protected $fillable = [
-        'color',
         'area_name',
+        'color',
+        'event_start',
+        'event_end',
+        'water_level',
+        'flood_type',
+        'damage',
+        'civilians',
         'description',
-        'event_date'
+        'status'
         
     ];
 

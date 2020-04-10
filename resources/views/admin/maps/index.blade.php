@@ -56,15 +56,16 @@
             <thead>
                 <tr>
                     <th class="mdl-data-table__cell--non-numeric">No</th>
-                    <th class="mdl-data-table__cell--non-numeric">Field</th>
+                    <th class="mdl-data-table__cell--non-numeric">Area</th>
                     <th class="mdl-data-table__cell--non-numeric">Deskripsi</th>
                     <th class="mdl-data-table__cell--non-numeric">Action</th>
                 </tr>
             </thead>
             <tbody>
+            <?php $no = 1 ?>
             @forelse ($getFields as $item)
                 <tr id="rows_null">
-                    <td class="mdl-data-table__cell--non-numeric">{{$item->id}}</td>
+                    <td class="mdl-data-table__cell--non-numeric">{{$no}}</td>
                     <td class="mdl-data-table__cell--non-numeric">{{$item->area_name}}</td>
                     <td class="mdl-data-table__cell--non-numeric">{{$item->description}}</td>
                     <td class="mdl-data-table__cell--non-numeric">
@@ -93,6 +94,7 @@
                         </ul>
                     </td>
                 </tr>
+            <?php $no++ ?>
             @empty
             <tr id="rows_null">
                 <td class="mdl-data-table__cell--non-numeric"></td>
@@ -215,15 +217,56 @@ async function detailField(id){
             <table>
               <tr>
                 <th>Area</th>
-                <td><input type="text" id="area_name" class="swal2-input" placeholder="Pemilik" value="${detail.area_name}"></td>
+                <td><input type="text" id="area_name" class="swal2-input" placeholder="Nama Area" value="${detail.area_name}"></td>
               </tr>
               <tr>
-                <th>Deskripsi Area</th>
-                <td><input type="text" id="desc" class="swal2-input" placeholder="Tanaman" value="${detail.description}"></td>
+                <th>Tanggal Awal Kejadian</th>
+                <td><input type="text" id="event_start" class="swal2-input datepickr" placeholder="Tanggal Awal Kejadian" value="${detail.event_start}"></td>
               </tr>
               <tr>
-                <th>Tanggal keadaan</th>
-                <td><input type="text" id="event_date" class="swal2-input datepickr" placeholder="Tanggal Tanam" value="${detail.event_date}"></td>
+                <th>Tanggal Akhir Kejadian <br>*jika belum berakhir sesuai tgl awal</th>
+                <td><input type="text" id="event_end" class="swal2-input datepickr" placeholder="Tanggal Akhir kejadian" value="${detail.event_end}"></td>
+              </tr>
+              <tr>
+                <th>Ketinggian Air */m</th>
+                <td><input type="number" id="water_level" class="swal2-input" placeholder="Ketinggian Air" min="0" value="${detail.water_level}"></td>
+              </tr>
+              <tr>
+                <th>Jenis Banjir</th>
+                <td>
+                  <select class="swal2-input" id="flood_type">
+                    <option value="">--pilihan--</option>
+                    <option value="air">Air</option>
+                    <option value="cileuncang">Cileuncang</option>
+                    <option value="rob">Rob</option>
+                    <option value="bandang">Bandang</option>
+                    <option value="lahar">Lahar</option>
+                    <option value="lumpur">Lumpur</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <th>Kerusakan</th>
+                <td><input type="text" id="damage" class="swal2-input" placeholder="Deskripi Kerusakan" value="${detail.damage}"></td>
+              </tr>
+              <tr>
+                <th>Jumlah Korban</th>
+                <td><input type="number" id="civilians" class="swal2-input" placeholder="Jumlah Korban" step="1" min="0" value="${detail.civilians}"></td>
+              </tr>
+              <tr>
+                <th>Deskripsi Perkiraan Penyebab</th>
+                <td><input type="text" id="description" class="swal2-input" placeholder="Deskripsi Penyebab" value="${detail.description}"></td>
+              </tr>
+              <tr>
+                <th>status</th>
+                <td>
+                  <select class="swal2-input" id="status">
+                    <option value="">--pilihan--</option>
+                    <option value="aman">Aman</option>
+                    <option value="sedang">sedang</option>
+                    <option value="rawan">Rawan</option>
+                  </select>
+                </td>
               </tr>
             </table>
           </div>
@@ -241,9 +284,15 @@ async function detailField(id){
         },
         preConfirm: () => {
           let v = {
-            areaName: document.getElementById('area_name').value,
-            desc: document.getElementById('desc').value,
-            eventDate: document.getElementById('event_date').value,
+            aName: document.getElementById('area_name').value,
+            eStart: document.getElementById('event_start').value,
+            eEnd: document.getElementById('event_end').value,
+            wLevel: document.getElementById('water_level').value,
+            fType: document.getElementById('flood_type').value,
+            damage: document.getElementById('damage').value,
+            civil: document.getElementById('civilians').value,
+            desc: document.getElementById('description').value,
+            status: document.getElementById('status').value,
           }
 
           // check empty value
@@ -253,7 +302,9 @@ async function detailField(id){
             }
           }
 
-          if(!v.eventDate.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/i)){
+          if(!v.eStart.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/i) 
+            || !v.eEnd.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/i)
+          ){
             Swal.showValidationMessage(`Format tanggal salah`);
           }
 
@@ -277,9 +328,15 @@ function sendUpdate(data){
       cache: false,
       data: {
         id: data.id,
-        areaName: data.areaName,
-        desc: data.desc,
-        eventDate: data.eventDate,
+        area_name: data.aName,
+        event_start: data.eStart,
+        event_end: data.eEnd,
+        water_level: data.wLevel,
+        flood_type: data.fType,
+        damage: data.damage,
+        civilians: data.civil,
+        description: data.desc,
+        status: data.status
       },
       error: function (xhr, status, error) {
         Swal.fire({

@@ -42,28 +42,57 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      *
      * @param array $data
      *
-     * @return Employee
+     * @return Field
      */
     public function createField(array $data): Field
     {
         try {
-            return $this->create([
-                "color"     => $data['color'],
-                "area_name" => $data['area_name'],
-                "crop"      => $data['crop'],
-                "event_date"=> $data['event_date']
+            if($data['status'] == "aman") {
+                $setColor = "#4caf50";
+            } else if($data['status'] == "sedang") {
+                $setColor = "#fafb00";
+            } else {
+                $setColor = "#f3000e";
+            }
+            $field = $this->create([
+                "color"         => $setColor,
+                "area_name"     => $data['aName'],
+                "event_start"   => $data['eStart'],
+                "event_end"     => $data['eEnd'],
+                "water_level"   => $data['wLevel'],
+                "flood_type"    => $data['fType'],
+                "damage"        => $data['damage'],
+                "civilians"     => $data['civil'],
+                "description"   => $data['desc'],
+                "status"        => $data['status']
             ]);
+            $this->createGeo($field->id,$data['coordinates']);
+            return $field;
         } catch (QueryException $e) {
             throw new FieldNotFoundException($e);
         }
     }
 
     /**
+     * Create the Geometries
+     *
+     * @param array $data
+     *
+     *
+     */
+    private function createGeo($id, $coordinates) {
+        $geometry = new Geometry();
+        $geometry->geo_type     = "Polygon";
+        $geometry->coordinates  = $coordinates;
+        $geometry->field_id     = $id;
+        $geometry->save();
+    }
+    /**
      * Find the field by id
      *
      * @param int $id
      *
-     * @return Employee
+     * @return Field
      */
     public function findFieldById(int $id): Field
     {
@@ -81,13 +110,10 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      *
      * @return bool
      */
-    public function updateField(array $params): bool
+    public function updateField(array $data): bool
     {
-        if (isset($params['password'])) {
-            // $params['password'] = Hash::make($params['password']);
-        }
-
-        return $this->update($params);
+        $filtered = collect($data)->all();
+        return $this->model->where('id', $this->model->id)->update($filtered);
     }
 
     /**

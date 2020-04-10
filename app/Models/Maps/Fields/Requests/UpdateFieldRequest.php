@@ -25,9 +25,11 @@ class UpdateFieldRequest extends FormRequest
     public function rules()
     {
         return [
-            'areaName' => ['required'],
-            'desc' => ['required'],
-            'eventDate' => ['required']
+            'area_name'     => ['required'],
+            'event_start'    => ['required'],
+            'water_level'    => ['required','numeric', 'min:0'],
+            'flood_type'     => ['required'],
+            'status'    => ['required']
         ];
     }
 }

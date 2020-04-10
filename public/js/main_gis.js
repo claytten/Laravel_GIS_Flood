@@ -283,15 +283,39 @@ function getPopupContent(field){
     <table>
       <tr>
         <th>Nama Area</th>
-        <td>${field.areaName}</td>
+        <td>${field.aName}</td>
       </tr>
       <tr>
-        <th>Deskripsi</th>
+        <th>Mulai Kejadian</th>
+        <td>${field.eStart}</td>
+      </tr>
+      <tr>
+        <th>Akhir Kejadian</th>
+        <td>${field.eEnd}</td>
+      </tr>
+      <tr>
+        <th>Ketinggian Air</th>
+        <td>${field.wLevel}</td>
+      </tr>
+      <tr>
+        <th>Tipe Banjir</th>
+        <td>${field.fType}</td>
+      </tr>
+      <tr>
+        <th>Kerusakan</th>
+        <td>${field.damage}</td>
+      </tr>
+      <tr>
+        <th>Jumlah Korban</th>
+        <td>${field.civil}</td>
+      </tr>
+      <tr>
+        <th>Deskripsi Penyebab</th>
         <td>${field.desc}</td>
       </tr>
       <tr>
-        <th>Tanggal Kejadian</th>
-        <td>${field.eventDate}</td>
+        <th>Status Daerah</th>
+        <td>${field.status}</td>
       </tr>
     </table>
   `
@@ -308,12 +332,53 @@ async function popupForm(color){
             <td><input type="text" id="area_name" class="swal2-input" placeholder="Nama Area"></td>
           </tr>
           <tr>
-            <th>Deskripsi Keadaan Area</th>
-            <td><input type="text" id="desc" class="swal2-input" placeholder="Deskripsi"></td>
+            <th>Tanggal Awal Kejadian</th>
+            <td><input type="text" id="event_start" class="swal2-input datepickr" placeholder="Tanggal Awal Kejadian"></td>
           </tr>
           <tr>
-            <th>Tanggal Keadaan</th>
-            <td><input type="text" id="event_date" class="swal2-input datepickr" placeholder="Tanggal Kejadian"></td>
+            <th>Tanggal Akhir Kejadian <br>*jika belum berakhir sesuai tgl awal</th>
+            <td><input type="text" id="event_end" class="swal2-input datepickr" placeholder="Tanggal Akhir kejadian"></td>
+          </tr>
+          <tr>
+            <th>Ketinggian Air */m</th>
+            <td><input type="number" id="water_level" class="swal2-input" placeholder="Ketinggian Air" min="0"></td>
+          </tr>
+          <tr>
+            <th>Jenis Banjir</th>
+            <td>
+              <select class="swal2-input" id="flood_type">
+                <option value="">--pilihan--</option>
+                <option value="air">Air</option>
+                <option value="cileuncang">Cileuncang</option>
+                <option value="rob">Rob</option>
+                <option value="bandang">Bandang</option>
+                <option value="lahar">Lahar</option>
+                <option value="lumpur">Lumpur</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <th>Kerusakan</th>
+            <td><input type="text" id="damage" class="swal2-input" placeholder="Deskripi Kerusakan"></td>
+          </tr>
+          <tr>
+            <th>Jumlah Korban</th>
+            <td><input type="number" id="civilians" class="swal2-input" placeholder="Jumlah Korban" step="1" min="0"></td>
+          </tr>
+          <tr>
+            <th>Deskripsi Perkiraan Penyebab</th>
+            <td><input type="text" id="description" class="swal2-input" placeholder="Deskripsi Penyebab"></td>
+          </tr>
+          <tr>
+            <th>status</th>
+            <td>
+              <select class="swal2-input" id="status">
+                <option value="">--pilihan--</option>
+                <option value="aman">Aman</option>
+                <option value="sedang">sedang</option>
+                <option value="rawan">Rawan</option>
+              </select>
+            </td>
           </tr>
         </table>
       </div>
@@ -331,9 +396,15 @@ async function popupForm(color){
     },
     preConfirm: () => {
       let v = {
-        areaName: document.getElementById('area_name').value,
-        desc: document.getElementById('desc').value,
-        eventDate: document.getElementById('event_date').value,
+        aName: document.getElementById('area_name').value,
+        eStart: document.getElementById('event_start').value,
+        eEnd: document.getElementById('event_end').value,
+        wLevel: document.getElementById('water_level').value,
+        fType: document.getElementById('flood_type').value,
+        damage: document.getElementById('damage').value,
+        civil: document.getElementById('civilians').value,
+        desc: document.getElementById('description').value,
+        status: document.getElementById('status').value,
       }
 
       // check empty value
@@ -343,7 +414,9 @@ async function popupForm(color){
         }
       }
 
-      if(!v.eventDate.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/i)){
+      if(!v.eStart.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/i) 
+          || !v.eEnd.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/i)
+        ){
         Swal.showValidationMessage(`Format tanggal salah`);
       }
 
@@ -363,9 +436,15 @@ async function popupForm(color){
 
   let sendData = {
     color: color,
-    areaName: formValues.areaName,
+    aName: formValues.aName,
+    eStart: formValues.eStart,
+    eEnd: formValues.eEnd,
+    wLevel: formValues.wLevel,
+    fType: formValues.fType,
+    damage: formValues.damage,
+    civil: formValues.civil,
     desc: formValues.desc,
-    eventDate: formValues.eventDate
+    status: formValues.status
   }
   sendPolygonJSON(sendData);
   
@@ -378,9 +457,15 @@ function sendPolygonJSON(data){
   polygonGeoJSON.properties = {
     color: data.color,
     popupContent: {
-      areaName: data.areaName,
+      aName: data.aName,
+      eStart: data.eStart,
+      eEnd: data.eEnd,
+      wLevel: data.wLevel,
+      fType: data.fType,
+      damage: data.damage,
+      civil: data.civil,
       desc: data.desc,
-      eventDate: data.eventDate
+      status: data.status
     }
   }
 
@@ -393,15 +478,21 @@ function sendPolygonJSON(data){
     cache: false,
     data: {
       color: data.color,
-      areaName: data.areaName,
+      aName: data.aName,
+      eStart: data.eStart,
+      eEnd: data.eEnd,
+      wLevel: data.wLevel,
+      fType: data.fType,
+      damage: data.damage,
+      civil: data.civil,
       desc: data.desc,
-      eventDate: data.eventDate,
+      status: data.status,
       coordinates: JSON.stringify(polygonGeoJSON.geometry.coordinates)
     },
     error: function (xhr, status, error) {
         console.log(xhr.responseText);
-        console.log('Error sending data', err);
-        console.log(data.color,data.areaName,data.desc,data.eventDate,JSON.stringify(polygonGeoJSON.geometry.coordinates))
+        console.log('Error sending data', error);
+        console.log(data.color,data.aName,data.desc,data.eventDate,JSON.stringify(polygonGeoJSON.geometry.coordinates))
     },
     success: function(response){ 
       console.log("lolsd");
@@ -445,11 +536,17 @@ function getGeoJSONData(){
 
 function onEachFeatureCallback(feature, layer){
   if (feature.properties && feature.properties.popupContent) {
-    let { areaName, desc, eventDate } = feature.properties.popupContent;
+    let { aName,eStart,eEnd,wLevel,fType,damage,civil,desc,status } = feature.properties.popupContent;
     let content = {
-      areaName: areaName,
+      aName: aName,
+      eStart: eStart,
+      eEnd: eEnd,
+      wLevel: wLevel,
+      fType: fType,
+      damage: damage,
+      civil: civil,
       desc: desc,
-      eventDate: eventDate
+      status: status
     }
     
     layer.bindPopup(getPopupContent(content));

@@ -46,6 +46,7 @@ class MapApiController extends Controller
     public function index()
     {
       $fields = $this->fieldRepo->listFields()->sortBy('name');
+      
       $field_response = array(
         "type" => "FeatureCollection",
         "features" => array()
@@ -56,9 +57,15 @@ class MapApiController extends Controller
           "properties" => array(
             "color" => $item->color,
             "popupContent" => array(
-              "areaName" => $item->area_name,
-              "desc" => $item->description,
-              "eventDate" => $item->event_date
+              "aName"   => $item->area_name,
+              "eStart"  => $item->event_start,
+              "eEnd"    => $item->event_end,
+              "wLevel"  => $item->water_level,
+              "fType"   => $item->flood_type,
+              "damage"  => $item->damage,
+              "civil"   => $item->civilians,
+              "desc"    => $item->description,
+              "status"  => $item->status
             )
           ),
           "geometry" => array(
@@ -86,20 +93,7 @@ class MapApiController extends Controller
      */
     public function store(CreateFieldRequest $request)
     {
-        
-        $field = new Field();
-        $field->color       = $request->color;
-        $field->area_name   = $request->areaName;
-        $field->description = $request->desc;
-        $field->event_date  = $request->eventDate;
-        $field->save();
-
-        $geometry = new Geometry();
-        $geometry->geo_type     = "Polygon";
-        $geometry->coordinates  = $request->coordinates;
-        $geometry->field_id     = $field->id;
-        $geometry->save();
-
+        $this->fieldRepo->createField($request->all());
         $message = "Field Succesfully created";
         
         return response()->json([
@@ -140,10 +134,18 @@ class MapApiController extends Controller
     {
       $getField = $this->fieldRepo->findFieldById($id);
       
-      $getField->area_name   = $request->areaName;
-      $getField->description = $request->desc;
-      $getField->event_date  = $request->eventDate;
-      $getField->save();
+      if($request['status'] == "aman") {
+          $setColor = "#4caf50";
+      } else if($request['status'] == "sedang") {
+          $setColor = "#fafb00";
+      } else {
+          $setColor = "#f3000e";
+      }
+      
+      $updateField = new FieldRepository($getField);
+      $updateField->updateField(
+        array_merge($request->all(), ['color' => $setColor])
+      );
 
       $message = "Field Succesfully updated";
     
@@ -159,7 +161,7 @@ class MapApiController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from database.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response

@@ -11,11 +11,11 @@ interface FieldRepositoryInterface extends BaseRepositoryInterface
 {
     public function listFields(): Collection;
 
-    public function createField(array $params) : Field;
+    public function createField(array $data) : Field;
 
     public function findFieldById(int $id) : Field;
 
-    public function updateField(array $params): bool;
+    public function updateField(array $data): bool;
 
     public function deleteField() : bool;
 }
