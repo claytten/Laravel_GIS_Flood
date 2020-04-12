@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\Admin\Maps;
 
-use App\Models\Maps\Fields\Requests\CreateFieldRequest;
-use App\Models\Maps\Fields\Requests\UpdateFieldRequest;
-use App\Models\Maps\Fields\Repositories\FieldRepository;
 use App\Models\Maps\Fields\Repositories\Interfaces\FieldRepositoryInterface;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Maps\Fields\reportField;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MapController extends Controller
 {
@@ -45,5 +43,16 @@ class MapController extends Controller
         $getFields = $fields = $this->fieldRepo->listFields()->sortBy('name');
         return view('admin.maps.index',compact('getFields'));
         
+    }
+
+    /**
+     * Reporting excel
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function reportExcel()
+    {
+        $fileName = 'laporan_daerah_'.date('Y-m-d_H-i-s').'.xlsx';
+        return Excel::download(new reportField, $fileName);
     }
 }

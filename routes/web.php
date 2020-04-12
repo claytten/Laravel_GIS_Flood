@@ -31,6 +31,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['employee'], 'as' => 'admin.
 
         Route::namespace('Maps')->group(function () {
             Route::resource('/maps/view', 'MapController',['only' => ['index']]);
+            Route::get('/maps/excel','MapController@reportExcel')->name('report.excel');
             Route::resource('/maps/api', 'MapApiController',['only' => ['index','show','update','destroy','store']]);
         });
     });
@@ -43,5 +44,8 @@ Auth::routes();
 
 Route::namespace('Front')->group(function () {
     Route::get('/', 'HomeController@index')->name('home');
+    Route::get('/maps', 'HomeController@maps')->name('maps');
+    Route::get('/data', 'HomeController@data')->name('data');
+    Route::get('/about', 'HomeController@about')->name('about');
 });
 

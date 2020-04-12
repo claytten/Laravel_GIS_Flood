@@ -115,7 +115,7 @@
 <script type="text/javascript" src="{{ asset('plugins/datatable/datatables.js') }}"></script>
 <script type="text/javascript" src="{{ asset('plugins/sweetalert2/sweetalert2.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/leaflet.js') }}"></script>
-<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+<script type="text/javascript" src="{{ asset('js/leaflet_fullscreen.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/flatpickr.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/easy-button.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/main_gis.js') }}"></script>
