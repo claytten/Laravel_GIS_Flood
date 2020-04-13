@@ -12,6 +12,7 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/front/favicon.ico')}}">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">

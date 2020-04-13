@@ -45,7 +45,9 @@ Auth::routes();
 Route::namespace('Front')->group(function () {
     Route::get('/', 'HomeController@index')->name('home');
     Route::get('/maps', 'HomeController@maps')->name('maps');
+    Route::get('/maps/api', 'HomeController@mapsApi')->name('maps.api');
     Route::get('/data', 'HomeController@data')->name('data');
+    Route::get('/data/detail/{id}', 'HomeController@dataDetail')->name('data.detail');
     Route::get('/about', 'HomeController@about')->name('about');
 });
 

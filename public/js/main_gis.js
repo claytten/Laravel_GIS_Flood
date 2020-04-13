@@ -72,7 +72,7 @@ var startDrawingButton = L.easyButton({
       
       btn.state('start-polyline');
       cancelPolyline();
-      drawingState = false;
+      
     }
   }]
 });
@@ -99,7 +99,11 @@ var finishButton = L.easyButton({
     title: 'Selesai Menggambar',
     stateName: 'finish-polyline',
     onClick: (btn, map) => {
+      drawingState = true;
       drawArea();
+      finishButton.disable();
+      undoButton.disable();
+      startDrawingButton.disable();
     }
   }]
 });
@@ -266,6 +270,9 @@ function drawHelpArea(){
 function cancelArea(){
   drawingState = true;
   mymap.removeLayer(polygon);
+  finishButton.enable();
+  undoButton.enable();
+  startDrawingButton.enable();
 }
 
 function confirmArea(color){

@@ -1,7 +1,9 @@
 <aside class="mdl-layout__drawer">
-    <header style="background-color: transparent">
-        {{config('app.name')}}
-    </header>
+    <a href="{{ route('home')}}">
+        <header style="background-color: transparent">
+            {{config('app.name')}}
+        </header>
+    </a>
     <div class="scroll__wrapper" id="scroll__wrapper">
         <div class="scroller" id="scroller">
             <div class="scroll__container" id="scroll__container">
