@@ -1,6 +1,7 @@
+
 "use strict"
 
-var url = "http://127.0.0.1:8000/";
+var url = window.location.origin + "/";
 var centerView = new L.LatLng(-7.674, 110.624);
 var mymap = L.map('mapid', {
   fullscreenControl: true
@@ -29,6 +30,22 @@ var drawingState = false;
 L.marker(centerView, {
   title: "Kota Klaten"
 }).addTo(mymap);
+
+var reportButton = L.easyButton({
+  id: 'report-view-button',
+  states: [{
+    icon: 'fas fa-file-excel',
+    title: 'Laporan Area Rawan Banjir',
+    stateName: 'repot-view',
+    onClick: () => {
+      redirectViewReport();
+    }
+  }]
+}).addTo(mymap);
+
+function redirectViewReport(){
+  window.location.href = `${url}admin/maps/excel`;
+}
 
 var startDrawingButton = L.easyButton({
   id: 'start-drawing-button',
@@ -294,8 +311,8 @@ function getPopupContent(field){
         <td>${field.eEnd}</td>
       </tr>
       <tr>
-        <th>Ketinggian Air</th>
-        <td>${field.wLevel}</td>
+        <th>Ketinggian Air </th>
+        <td>${field.wLevel} m</td>
       </tr>
       <tr>
         <th>Tipe Banjir</th>
