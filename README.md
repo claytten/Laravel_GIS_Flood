@@ -1,4 +1,10 @@
-# Sistem Informasi Geographic Kabupaten
+# Sistem Informasi Geografis Banjir
+
+## Image
+![dashboard](https://user-images.githubusercontent.com/38114768/79122700-99760f00-7dc2-11ea-91d5-2b42676b1312.jpg)
+![homepage](https://user-images.githubusercontent.com/38114768/79122723-ac88df00-7dc2-11ea-81a0-0fc30787f969.jpg)
+![maps](https://user-images.githubusercontent.com/38114768/79122746-b7437400-7dc2-11ea-8c23-c78981dcd7e4.jpg)
+![data](https://user-images.githubusercontent.com/38114768/79122770-c4606300-7dc2-11ea-95b3-0f70e4dcd655.jpg)
 
 ## Requirement
  * `PHP 7.3>`
@@ -13,6 +19,11 @@
 * `php aritsan key:generate`
 * `php artisan migrate --seed`
 * `php artisan storage:link`
+
+## Features
+* `CRUD Role,Permission and Admin`
+* `CRUD maps`
+* `exporting data to csv`
 
 ## Notes
  * `This is my custom template login,register,role with spatie permission`
