@@ -30,9 +30,8 @@ class AdminController extends Controller
     )
     {
         // Spatie ACL
-        $this->middleware('permission:admin-list');
+        $this->middleware('permission:admin-list',['only' => ['index']]);
         $this->middleware('permission:admin-create', ['only' => ['create','store']]);
-        $this->middleware('permission:admin-edit', ['only' => ['edit','update']]);
         $this->middleware('permission:admin-delete', ['only' => ['destroy']]);
 
         $this->employeeRepo = $employeeRepository;
@@ -105,12 +104,12 @@ class AdminController extends Controller
                 'message'   => 'Update successful!'
             ]);
         }
-        
+
         $employee = $this->employeeRepo->findEmployeeById($id);
 
         $employeeRepo = new EmployeeRepository($employee);
         $employeeRepo->updateEmployee($request->all());
-        
+
 
         return redirect()->route('admin.admin.edit', $id)->with([
             'icon'      => 'check',

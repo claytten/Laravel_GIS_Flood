@@ -19,10 +19,10 @@
                             Account
                             <i class="material-icons">keyboard_arrow_down</i>
                         </a>
-                        
+
                         <div class="mdl-navigation">
                             @if(Auth::guard('employee')->user()->can('admin-list'))
-                            <a class="mdl-navigation__link {{ !empty($submenu) ? ($submenu == 'admins' ? 'mdl-navigation__link--current' : '') : '' }}" 
+                            <a class="mdl-navigation__link {{ !empty($submenu) ? ($submenu == 'admins' ? 'mdl-navigation__link--current' : '') : '' }}"
                             href="{{route('admin.admin.index')}}">
                                 Admin
                             </a>
@@ -35,12 +35,12 @@
                             </a>
                             @endif
 
-                            @if(Auth::guard('employee')->user()->can('customer-list'))
+                            <!-- @if(Auth::guard('employee')->user()->can('customer-list'))
                             <a class="mdl-navigation__link" {{ !empty($submenu) ? ($submenu == 'customers' ? 'mdl-navigation__link--current' : '') : '' }}
                                 href="ui-form-components.html">
                                 Customer
                             </a>
-                            @endif
+                            @endif -->
                         </div>
                     </div>
                     @endif
@@ -51,7 +51,7 @@
                         maps
                     </a>
                     @endif
-                    
+
                     <div class="mdl-layout-spacer"></div>
                     <hr>
                     <div class="mdl-navigation__link">

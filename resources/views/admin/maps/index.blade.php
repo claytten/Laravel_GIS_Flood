@@ -42,7 +42,7 @@
 @endsection
 
 @section('content_body')
-<div class="mdl-grid mdl-cell mdl-cell--12-col-desktop mdl-cell--12-col-tablet mdl-cell--4-col-phone mdl-cell--top">  
+<div class="mdl-grid mdl-cell mdl-cell--12-col-desktop mdl-cell--12-col-tablet mdl-cell--4-col-phone mdl-cell--top">
 
     <!-- Map widget-->
     <div class="mdl-cell mdl-cell--4-col-desktop mdl-cell--6-col-tablet mdl-cell--2-col-phone">
@@ -70,7 +70,7 @@
                     <td class="mdl-data-table__cell--non-numeric">{{$item->description}}</td>
                     <td class="mdl-data-table__cell--non-numeric">
                         <button id="more_{{$item->id}}" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button--colored-light-blue">Action</button>
-    
+
                         <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect mdl-shadow--2dp accounts-dropdown mdl-list pull-left"
                         for="more_{{$item->id}}">
                             @if(Auth::guard('employee')->user()->can('maps-edit'))
@@ -81,7 +81,7 @@
                                 </button>
                             </li>
                             @endif
-    
+
                             @if(Auth::guard('employee')->user()->can('maps-delete'))
                             <li >
                                 <button onclick="deleteField('{{$item->id}}')" class="mdl-button mdl-js-button mdl-js-ripple-effect button--colored-red">
@@ -90,7 +90,7 @@
                                 </button>
                             </li>
                             @endif
-                            
+
                         </ul>
                     </td>
                 </tr>
@@ -103,7 +103,7 @@
                 <td class="mdl-data-table__cell--non-numeric"></td>
             </tr>
             @endforelse
-            
+
             </tbody>
         </table>
     </div>
@@ -138,6 +138,12 @@ var usersTable = $("#mapsTable").DataTable({
         }
     ]
 });
+var getPerm = {!! json_encode(Auth::guard('employee')->user()->can('maps-create'))!!};
+if(getPerm == false) {
+    startDrawingButton.disable();
+    undoButton.disable();
+    finishButton.disable();
+}
 
 function deleteField(id){
     $(".alert-result").slideUp(function(){
@@ -302,7 +308,7 @@ async function detailField(id){
             }
           }
 
-          if(!v.eStart.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/i) 
+          if(!v.eStart.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/i)
             || !v.eEnd.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/i)
           ){
             Swal.showValidationMessage(`Format tanggal salah`);

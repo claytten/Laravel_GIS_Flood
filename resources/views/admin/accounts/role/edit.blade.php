@@ -22,14 +22,14 @@
 @endsection
 
 @section('content_body')
-<div class="mdl-grid mdl-cell mdl-cell--9-col-desktop mdl-cell--12-col-tablet mdl-cell--4-col-phone mdl-cell--top">  
+<div class="mdl-grid mdl-cell mdl-cell--9-col-desktop mdl-cell--12-col-tablet mdl-cell--4-col-phone mdl-cell--top">
     <!-- Table-->
     <div class="mdl-cell mdl-cell--12-col-desktop mdl-cell--12-col-tablet mdl-cell--4-col-phone ">
         <div class="mdl-card mdl-shadow--2dp employer-form " action="#">
             <div class="mdl-card__title">
                 <h2>Edit Role</h2>
             </div>
-    
+
             <div class="mdl-card__supporting-text">
                 <form action="{{ route('admin.role.update', $role->id)}}" method="POST" class="form">
                     {{ csrf_field() }}
@@ -68,9 +68,9 @@
                             </ul>
                             @endforeach
                         </div>
-    
+
                     </div>
-    
+
                     <div class="form__action">
                         <button type="reset" class="mdl-cell mdl-cell--3-col-desktop mdl-cell--3-col-tablet mdl-cell--2-col-phone mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button--colored-red" id="btn_reset">
                             <i class="material-icons">loop</i>

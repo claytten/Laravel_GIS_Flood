@@ -57,7 +57,7 @@ var startDrawingButton = L.easyButton({
       btn.button.style.backgroundColor = "#f00";
       btn.button.style.color = "#fff";
       document.getElementById("mapid").style.cursor = "crosshair";
-      
+
       btn.state('cancel-polyline');
       drawingState = true;
     }
@@ -69,10 +69,10 @@ var startDrawingButton = L.easyButton({
       btn.button.style.backgroundColor = "#fff";
       btn.button.style.color = "#000";
       document.getElementById("mapid").style.cursor = "grab";
-      
+
       btn.state('start-polyline');
       cancelPolyline();
-      
+
     }
   }]
 });
@@ -134,9 +134,9 @@ function onMapClick(e) {
 
 function onMapMouseMove(e) {
   if(!drawingState || pols.length < 1) return;
-  
+
   let latlngs = [pols[pols.length - 1], [e.latlng.lat, e.latlng.lng]];
-  
+
   if(helpLine){
     helpLine.setLatLngs(latlngs);
   }
@@ -187,14 +187,14 @@ function finishPolyline(){
   polyline = undefined;
   helpLine = undefined;
   helpPolygon = undefined;
-  
+
   finishButton.disable();
   undoButton.disable();
 }
 
 function cancelPolyline(){
   if(polyline === undefined) return;
-  
+
   removeMapLayers();
   finishPolyline();
 }
@@ -204,7 +204,7 @@ function undoPoint(){
   if(pols.length == 0) return;
 
   pols.pop();
-  
+
   polyline.setLatLngs(pols);
   helpPolygon.setLatLngs(pols);
 
@@ -234,7 +234,7 @@ function drawArea(){
   let randCol = '#' + (function co(lor){   return (lor +=
     [0,1,2,3,4,5,6,7,8,9,'a','b','c','d','e','f'][Math.floor(Math.random()*16)])
     && (lor.length == 6) ?  lor : co(lor); })('');
-  
+
   polygon = L.polygon([pols], {
     color: randCol,
     fillOpacity: 0.4
@@ -253,7 +253,7 @@ function drawArea(){
 function drawHelpArea(){
   if(polyline === undefined) return;
   if(!validateArea()) return;
-  
+
   if(helpPolygon){
     helpPolygon.setLatLngs(pols)
   }
@@ -438,7 +438,7 @@ async function popupForm(color){
         }
       }
 
-      if(!v.eStart.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/i) 
+      if(!v.eStart.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/i)
           || !v.eEnd.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/i)
         ){
         Swal.showValidationMessage(`Format tanggal salah`);
@@ -471,7 +471,7 @@ async function popupForm(color){
     status: formValues.status
   }
   sendPolygonJSON(sendData);
-  
+
   drawingState = true;
   finishPolyline();
 }
@@ -518,7 +518,7 @@ function sendPolygonJSON(data){
         console.log('Error sending data', error);
         console.log(data.color,data.aName,data.desc,data.eventDate,JSON.stringify(polygonGeoJSON.geometry.coordinates))
     },
-    success: function(response){ 
+    success: function(response){
       console.log("lolsd");
       console.log(response);
       $(`
@@ -548,12 +548,12 @@ function getGeoJSONData(){
     error: function (xhr, status, error) {
       console.log(xhr.responseText);
     },
-    success: function(response){ 
+    success: function(response){
       wew = response.data;
       console.log(wew);
     }
   });
-  
+
   return wew;
   //underbuilding
 }
@@ -572,7 +572,7 @@ function onEachFeatureCallback(feature, layer){
       desc: desc,
       status: status
     }
-    
+
     layer.bindPopup(getPopupContent(content));
   }
 }
@@ -582,7 +582,7 @@ mymap.on('click', onMapClick);
 mymap.addEventListener('mousemove', onMapMouseMove);
 document.onkeydown = (e) => {
   if(!drawingState) return;
-  
+
   switch(e.keyCode){
     case 13: onKeyDownEnter(); break;
     case 27: onKeyDownEscape(); break;

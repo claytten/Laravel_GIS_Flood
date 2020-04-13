@@ -42,7 +42,7 @@ class MapController extends Controller
     {
         $getFields = $fields = $this->fieldRepo->listFields()->sortBy('name');
         return view('admin.maps.index',compact('getFields'));
-        
+
     }
 
     /**
@@ -52,7 +52,7 @@ class MapController extends Controller
      */
     public function reportExcel()
     {
-        $fileName = 'laporan_daerah_'.date('Y-m-d_H-i-s').'.xlsx';
+        $fileName = 'laporan_daerah_'.date('Y-m-d_H-i-s').'.csv';
         return Excel::download(new reportField, $fileName);
     }
 }

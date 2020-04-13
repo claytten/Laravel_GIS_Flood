@@ -40,11 +40,11 @@
 @endsection
 
 @section('content_body')
-<div class="mdl-grid mdl-cell mdl-cell--9-col-desktop mdl-cell--12-col-tablet mdl-cell--4-col-phone mdl-cell--top">  
+<div class="mdl-grid mdl-cell mdl-cell--9-col-desktop mdl-cell--12-col-tablet mdl-cell--4-col-phone mdl-cell--top">
     <!-- Table-->
     <div class="mdl-cell mdl-cell--12-col-desktop mdl-cell--12-col-tablet mdl-cell--4-col-phone ">
         <div id="loading">
-            
+
         </div>
         <table class="mdl-cell mdl-cell--12-col-desktop mdl-cell--12-col-tablet mdl-cell--4-col-phone mdl-data-table mdl-js-data-table  mdl-shadow--2dp projects-table" id="rolesTable">
             <thead>
@@ -63,7 +63,7 @@
                     <td class="mdl-data-table__cell--non-numeric">{{$item->permissions_count}}</td>
                     <td class="mdl-data-table__cell--non-numeric">
                         <button id="more_{{$item->id}}" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button--colored-light-blue">Action</button>
-    
+
                         <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect mdl-shadow--2dp accounts-dropdown mdl-list pull-left"
                         for="more_{{$item->id}}">
                             @if(Auth::guard('employee')->user()->can('roles-edit'))
@@ -76,7 +76,7 @@
                                 </li>
                             </a>
                             @endif
-    
+
                             @if(Auth::guard('employee')->user()->can('roles-list'))
                             <a href="{{route('admin.role.show', $item->id)}}">
                                 <li>
@@ -87,16 +87,16 @@
                                 </li>
                             </a>
                             @endif
-                            
+
                             @if(Auth::guard('employee')->user()->can('roles-delete'))
                             <li>
-                                <button onclick="deleteRole('{{$item->id}}')" class="mdl-button mdl-js-button mdl-js-ripple-effect button--colored-red">
+                                <button onclick="deleteRole('{{$item->id, Auth::guard('employee')->user()->id }}')" class="mdl-button mdl-js-button mdl-js-ripple-effect button--colored-red">
                                     <i class="material-icons">delete_forever</i>
                                     Delete
                                 </button>
                             </li>
                             @endif
-                            
+
                         </ul>
                     </td>
                 </tr>
@@ -139,7 +139,7 @@ var usersTable = $("#rolesTable").DataTable({
         }
     ]
 });
-function deleteRole(id){
+function deleteRole(id,loginId){
     $(".alert-result").slideUp(function(){
         $(this).remove();
     });
@@ -153,9 +153,11 @@ function deleteRole(id){
         showCancelButton: true,
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
-        console.log(result.icon);
+
         if(result.value){
-            $.post("{{ route('admin.role.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE'}, function(result){
+            console.log(loginId);
+            $.post("{{ route('admin.role.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE', 'dataLogin' : loginId }, function(result){
+                console.log(result.data);
                 $('#rows_'+id).remove();
                 // Append Alert Result
                 $(`

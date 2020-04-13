@@ -46,7 +46,7 @@ class MapApiController extends Controller
     public function index()
     {
       $fields = $this->fieldRepo->listFields()->sortBy('name');
-      
+
       $field_response = array(
         "type" => "FeatureCollection",
         "features" => array()
@@ -73,11 +73,10 @@ class MapApiController extends Controller
             "coordinates" => json_decode($item->geometries->coordinates)
           )
         );
-        
+
         $field_response["features"][] = $temp;
-        
+
       }
-  
       return response()->json([
           'code'    => 200,
           'status'  => 'success',
@@ -95,7 +94,7 @@ class MapApiController extends Controller
     {
         $this->fieldRepo->createField($request->all());
         $message = "Field Succesfully created";
-        
+
         return response()->json([
             'code'        => 200,
             'status'      => 'success',
@@ -133,7 +132,7 @@ class MapApiController extends Controller
     public function update(UpdateFieldRequest $request, $id)
     {
       $getField = $this->fieldRepo->findFieldById($id);
-      
+
       if($request['status'] == "aman") {
           $setColor = "#4caf50";
       } else if($request['status'] == "sedang") {
@@ -141,14 +140,14 @@ class MapApiController extends Controller
       } else {
           $setColor = "#f3000e";
       }
-      
+
       $updateField = new FieldRepository($getField);
       $updateField->updateField(
         array_merge($request->all(), ['color' => $setColor])
       );
 
       $message = "Field Succesfully updated";
-    
+
       return response()->json([
           'code'        => 200,
           'status'      => 'success',
