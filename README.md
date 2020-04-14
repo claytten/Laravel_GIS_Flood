@@ -17,7 +17,7 @@
 * `duplicate .env-example and rename to .env`
 * `Insert Identity Database`
 * `composer install`
-* `php aritsan key:generate`
+* `php artisan key:generate`
 * `php artisan migrate --seed`
 * `php artisan storage:link`
 
