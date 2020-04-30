@@ -11,9 +11,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Maps\Fields\Field;
 use App\Models\Maps\Geometries\Geometry;
+use App\Models\Tools\UploadableTrait;
+use Illuminate\Http\UploadedFile;
 
 class MapApiController extends Controller
 {
+  use UploadableTrait;
     /**
      * @var FieldRepositoryInterface
      */
@@ -65,7 +68,8 @@ class MapApiController extends Controller
               "damage"  => $item->damage,
               "civil"   => $item->civilians,
               "desc"    => $item->description,
-              "status"  => $item->status
+              "status"  => $item->status,
+              "image"   => $item->image
             )
           ),
           "geometry" => array(
@@ -90,10 +94,31 @@ class MapApiController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateFieldRequest $request)
+    public function store(Request $request)
     {
-        $this->fieldRepo->createField($request->all());
-        $message = "Field Succesfully created";
+      if($request->has('id')) {
+        $getField = $this->fieldRepo->findFieldById($request->id);
+
+        if($request['status'] == "aman") {
+            $setColor = "#4caf50";
+        } else if($request['status'] == "sedang") {
+            $setColor = "#fafb00";
+        } else {
+            $setColor = "#f3000e";
+        }
+
+        $updateField = new FieldRepository($getField);
+        if ($request->hasFile('image') && $request->file('image') instanceof UploadedFile) {
+          if(!empty($getField->image)) {
+              $updateField->deleteFile($getField->image);
+          }
+          $request['images'] = $this->fieldRepo->saveCoverImage($request->file('image'));
+        }
+        $updateField->updateField(
+          array_merge($request->all(), ['color' => $setColor])
+        );
+
+        $message = "Field Succesfully updated";
 
         return response()->json([
             'code'        => 200,
@@ -102,8 +127,26 @@ class MapApiController extends Controller
             'status'      => 'green',
             'message'     => $message,
             'redirect_url'=> route('admin.view.index'),
-            'data'        => null
+            'data'        => $request->id
         ]);
+      }
+
+      if ($request->hasFile('image') && $request->file('image') instanceof UploadedFile) {
+          $request['images'] = $this->fieldRepo->saveCoverImage($request->file('image'));
+      }
+
+      $this->fieldRepo->createField($request->all());
+      $message = "Field Succesfully created";
+
+      return response()->json([
+          'code'        => 200,
+          'status'      => 'success',
+          'icon'        => 'check',
+          'status'      => 'green',
+          'message'     => $message,
+          'redirect_url'=> route('admin.view.index'),
+          'data'        => $request->all()
+      ]);
     }
 
     /**
@@ -123,43 +166,6 @@ class MapApiController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateFieldRequest $request, $id)
-    {
-      $getField = $this->fieldRepo->findFieldById($id);
-
-      if($request['status'] == "aman") {
-          $setColor = "#4caf50";
-      } else if($request['status'] == "sedang") {
-          $setColor = "#fafb00";
-      } else {
-          $setColor = "#f3000e";
-      }
-
-      $updateField = new FieldRepository($getField);
-      $updateField->updateField(
-        array_merge($request->all(), ['color' => $setColor])
-      );
-
-      $message = "Field Succesfully updated";
-
-      return response()->json([
-          'code'        => 200,
-          'status'      => 'success',
-          'icon'        => 'check',
-          'status'      => 'green',
-          'message'     => $message,
-          'redirect_url'=> route('admin.view.index'),
-          'data'        => null
-      ]);
-    }
-
-    /**
      * Remove the specified resource from database.
      *
      * @param  int  $id
@@ -172,6 +178,9 @@ class MapApiController extends Controller
         if($request->user_action == "delete") {
           $message = 'Field successfully Deleted';
           $getField = new FieldRepository($field);
+          if(!empty($field->image) ) {
+            $getField->deleteFile($field->image);
+          }
           $getField->deleteField();
         }
 

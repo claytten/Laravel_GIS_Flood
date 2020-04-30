@@ -5,6 +5,7 @@ namespace App\Models\Maps\Fields\Repositories\Interfaces;
 use Jsdecena\Baserepo\BaseRepositoryInterface;
 use App\Models\Maps\Fields\Field;
 use App\Models\Maps\Geometries\Geometry;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 
 interface FieldRepositoryInterface extends BaseRepositoryInterface
@@ -18,4 +19,8 @@ interface FieldRepositoryInterface extends BaseRepositoryInterface
     public function updateField(array $data): bool;
 
     public function deleteField() : bool;
+
+    public function saveCoverImage(UploadedFile $file) : string;
+
+    public function deleteFile(string $get_data);
 }

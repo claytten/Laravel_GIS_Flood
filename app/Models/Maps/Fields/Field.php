@@ -23,7 +23,8 @@ class Field extends Model
         'damage',
         'civilians',
         'description',
-        'status'
+        'status',
+        'image'
         
     ];
 

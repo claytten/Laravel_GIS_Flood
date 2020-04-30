@@ -6,13 +6,17 @@ use Jsdecena\Baserepo\BaseRepository;
 use App\Models\Maps\Fields\Field;
 use App\Models\Maps\Fields\Exceptions\FieldNotFoundException;
 use App\Models\Maps\Fields\Repositories\Interfaces\FieldRepositoryInterface;
+use App\Models\Tools\UploadableTrait;
 use App\Models\Maps\Geometries\Geometry;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
 use Illuminate\Database\QueryException;
 
 class FieldRepository extends BaseRepository implements FieldRepositoryInterface
 {
+    use UploadableTrait;
     /**
      * FieldRepository constructor.
      *
@@ -64,7 +68,8 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
                 "damage"        => $data['damage'],
                 "civilians"     => $data['civil'],
                 "description"   => $data['desc'],
-                "status"        => $data['status']
+                "status"        => $data['status'],
+                "image"         => $data['images']
             ]);
             $this->createGeo($field->id,$data['coordinates']);
             return $field;
@@ -112,8 +117,19 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      */
     public function updateField(array $data): bool
     {
-        $filtered = collect($data)->all();
-        return $this->model->where('id', $this->model->id)->update($filtered);
+        return $this->model->where('id', $this->model->id)->update([
+            "color"         => $data['color'],
+            "area_name"     => $data['aName'],
+            "event_start"   => $data['eStart'],
+            "event_end"     => $data['eEnd'],
+            "water_level"   => $data['wLevel'],
+            "flood_type"    => $data['fType'],
+            "damage"        => $data['damage'],
+            "civilians"     => $data['civil'],
+            "description"   => $data['desc'],
+            "status"        => $data['status'],
+            "image"         => $data['images']
+        ]);
     }
 
     /**
@@ -123,5 +139,25 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
     public function deleteField() : bool
     {
         return $this->delete();
+    }
+
+    /**
+     * @param UploadedFile $file
+     * @return string
+     */
+    public function saveCoverImage(UploadedFile $file) : string
+    {
+        return $file->store('fields', ['disk' => 'public']);
+    }
+
+    /**
+     * Destroye File on Storage
+     *
+     * @param string $get_data
+     *
+     */
+    public function deleteFile(string $get_data)
+    {
+        return File::delete("storage/{$get_data}");
     }
 }

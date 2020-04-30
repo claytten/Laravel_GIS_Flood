@@ -32,7 +32,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['employee'], 'as' => 'admin.
         Route::namespace('Maps')->group(function () {
             Route::resource('/maps/view', 'MapController',['only' => ['index']]);
             Route::get('/maps/excel','MapController@reportExcel')->name('report.excel');
-            Route::resource('/maps/api', 'MapApiController',['only' => ['index','show','update','destroy','store']]);
+            Route::resource('/maps/api', 'MapApiController',['only' => ['index','show','destroy','store']]);
         });
     });
 });
@@ -40,7 +40,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['employee'], 'as' => 'admin.
 /**
  * Customer routes
  */
-Auth::routes();
+// Auth::routes();
 
 Route::namespace('Front')->group(function () {
     Route::get('/', 'HomeController@index')->name('home');

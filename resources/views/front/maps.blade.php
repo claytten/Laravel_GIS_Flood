@@ -108,6 +108,15 @@ function getPopupContent(field){
           <th>Status Daerah</th>
           <td>${field.status}</td>
         </tr>
+
+        <tr>
+          <th>Kondisi</th>
+          <td>${
+            field.image != null 
+              ? '<img src="'+url + 'storage/' + field.image+'" height="100" width="100">' 
+                : 'tidak ada gambar'
+          }</td>
+        </tr>
       </table>
     `
 }
@@ -139,17 +148,18 @@ function getGeoJSONData(id){
 
 function onEachFeatureCallback(feature, layer){
     if (feature.properties && feature.properties.popupContent) {
-        let { aName,eStart,eEnd,wLevel,fType,damage,civil,desc,status } = feature.properties.popupContent;
+        let { aName,eStart,eEnd,wLevel,fType,damage,civil,desc,status,image } = feature.properties.popupContent;
         let content = {
-        aName: aName,
-        eStart: eStart,
-        eEnd: eEnd,
-        wLevel: wLevel,
-        fType: fType,
-        damage: damage,
-        civil: civil,
-        desc: desc,
-        status: status
+          aName: aName,
+          eStart: eStart,
+          eEnd: eEnd,
+          wLevel: wLevel,
+          fType: fType,
+          damage: damage,
+          civil: civil,
+          desc: desc,
+          status: status,
+          image: image
         }
         
         layer.bindPopup(getPopupContent(content)).openPopup();

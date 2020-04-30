@@ -82,7 +82,8 @@ class HomeController extends Controller
                 "damage"  => $item->damage,
                 "civil"   => $item->civilians,
                 "desc"    => $item->description,
-                "status"  => $item->status
+                "status"  => $item->status,
+                "image"   => $item->image
                 )
             ),
             "geometry" => array(

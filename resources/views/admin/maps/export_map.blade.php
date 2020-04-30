@@ -28,6 +28,7 @@
             <td>{{ $item->civilians }}</td>
             <td>{{ $item->description }}</td>
             <td>{{ $item->status }}</td>
+            <td>{{ $item->image }}</td>
             <td>{{ $item->geometries->coordinates }}</td>
         </tr>
     @endforeach

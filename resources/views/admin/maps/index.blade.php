@@ -123,6 +123,7 @@
 
 @section('inline_js')
 <script>
+
 var usersTable = $("#mapsTable").DataTable({
     order: [2, 'asc'],
     pageLength: 5,
@@ -274,6 +275,12 @@ async function detailField(id){
                   </select>
                 </td>
               </tr>
+              <tr>
+                <th>Kondisi</th>
+                <td>
+                  <input type="file" accept=".jpg, .jpeg, .png" id="image" class="form-control imgs" name="image" >
+                </td>
+              </tr>
             </table>
           </div>
           `,
@@ -299,6 +306,7 @@ async function detailField(id){
             civil: document.getElementById('civilians').value,
             desc: document.getElementById('description').value,
             status: document.getElementById('status').value,
+            image: $("#image").prop("files")[0]
           }
 
           // check empty value
@@ -328,22 +336,29 @@ async function detailField(id){
 }
 
 function sendUpdate(data){
+    
+    let formData = new FormData();
+    formData.append('id',data.id);
+    formData.append('aName',data.aName);
+    formData.append('eStart',data.eStart);
+    formData.append('eEnd',data.eEnd);
+    formData.append('wLevel',data.wLevel);
+    formData.append('fType',data.fType);
+    formData.append('damage',data.damage);
+    formData.append('civil',data.civil);
+    formData.append('desc',data.desc);
+    formData.append('status',data.status);
+    formData.append('image',data.image);
     $.ajax({
-      url: "{{ route('admin.api.index') }}/"+data.id,
-      type: 'PUT',
-      cache: false,
-      data: {
-        id: data.id,
-        area_name: data.aName,
-        event_start: data.eStart,
-        event_end: data.eEnd,
-        water_level: data.wLevel,
-        flood_type: data.fType,
-        damage: data.damage,
-        civilians: data.civil,
-        description: data.desc,
-        status: data.status
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
+      url: "{{ route('admin.api.store') }}",
+      type: 'POST',
+      cache: false,
+      contentType: false,
+      processData: false,
+      data: formData,
       error: function (xhr, status, error) {
         Swal.fire({
           title: 'Terjadi kesalahan',
@@ -356,6 +371,8 @@ function sendUpdate(data){
       },
       success: function(response){
         if(response.code === 200){
+          console.log(formData.get('id'));
+          console.log(response);
           $(`
           <div class="alert-result mdl-shadow--2dp alert color--`+response.status+`">
               <button type="button" class="close-alert" onclick="removeAlert()">×</button>

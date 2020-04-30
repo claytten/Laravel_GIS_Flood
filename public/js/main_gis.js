@@ -341,6 +341,14 @@ function getPopupContent(field){
         <th>Status Daerah</th>
         <td>${field.status}</td>
       </tr>
+      <tr>
+        <th>Kondisi</th>
+        <td>${
+          field.image != null 
+            ? '<img src="'+url + 'storage/' + field.image+'" height="100" width="100">' 
+              : 'tidak ada gambar'
+        }</td>
+      </tr>
     </table>
   `
 }
@@ -404,6 +412,12 @@ async function popupForm(color){
               </select>
             </td>
           </tr>
+          <tr>
+            <th>Kondisi</th>
+            <td>
+              <input type="file" accept=".jpg, .jpeg, .png" id="image" class="form-control imgs" name="image" >
+            </td>
+          </tr>
         </table>
       </div>
       `,
@@ -429,6 +443,7 @@ async function popupForm(color){
         civil: document.getElementById('civilians').value,
         desc: document.getElementById('description').value,
         status: document.getElementById('status').value,
+        image: $("#image").prop("files")[0]
       }
 
       // check empty value
@@ -468,7 +483,8 @@ async function popupForm(color){
     damage: formValues.damage,
     civil: formValues.civil,
     desc: formValues.desc,
-    status: formValues.status
+    status: formValues.status,
+    image: formValues.image
   }
   sendPolygonJSON(sendData);
 
@@ -489,10 +505,23 @@ function sendPolygonJSON(data){
       damage: data.damage,
       civil: data.civil,
       desc: data.desc,
-      status: data.status
+      status: data.status,
+      image: data.image
     }
   }
-
+  let formData = new FormData();
+  formData.append('color',data.color);
+  formData.append('aName',data.aName);
+  formData.append('eStart',data.eStart);
+  formData.append('eEnd',data.eEnd);
+  formData.append('wLevel',data.wLevel);
+  formData.append('fType',data.fType);
+  formData.append('damage',data.damage);
+  formData.append('civil',data.civil);
+  formData.append('desc',data.desc);
+  formData.append('status',data.status);
+  formData.append('image',data.image);
+  formData.append('coordinates',JSON.stringify(polygonGeoJSON.geometry.coordinates));
   $.ajax({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -500,23 +529,13 @@ function sendPolygonJSON(data){
     url: `${url}admin/maps/api`,
     type: 'POST',
     cache: false,
-    data: {
-      color: data.color,
-      aName: data.aName,
-      eStart: data.eStart,
-      eEnd: data.eEnd,
-      wLevel: data.wLevel,
-      fType: data.fType,
-      damage: data.damage,
-      civil: data.civil,
-      desc: data.desc,
-      status: data.status,
-      coordinates: JSON.stringify(polygonGeoJSON.geometry.coordinates)
-    },
+    contentType: false,
+    processData: false,
+    data: formData,
     error: function (xhr, status, error) {
         console.log(xhr.responseText);
         console.log('Error sending data', error);
-        console.log(data.color,data.aName,data.desc,data.eventDate,JSON.stringify(polygonGeoJSON.geometry.coordinates))
+        console.log(data.color,data.aName,data.desc,data.image,JSON.stringify(polygonGeoJSON.geometry.coordinates))
     },
     success: function(response){
       console.log("lolsd");
@@ -560,7 +579,7 @@ function getGeoJSONData(){
 
 function onEachFeatureCallback(feature, layer){
   if (feature.properties && feature.properties.popupContent) {
-    let { aName,eStart,eEnd,wLevel,fType,damage,civil,desc,status } = feature.properties.popupContent;
+    let { aName,eStart,eEnd,wLevel,fType,damage,civil,desc,status,image } = feature.properties.popupContent;
     let content = {
       aName: aName,
       eStart: eStart,
@@ -570,7 +589,8 @@ function onEachFeatureCallback(feature, layer){
       damage: damage,
       civil: civil,
       desc: desc,
-      status: status
+      status: status,
+      image: image
     }
 
     layer.bindPopup(getPopupContent(content));
