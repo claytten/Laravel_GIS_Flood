@@ -2,11 +2,11 @@
 
 namespace App\Models\Employees\Repositories\Interfaces;
 
-use Jsdecena\Baserepo\BaseRepositoryInterface;
 use App\Models\Employees\Employee;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 
-interface EmployeeRepositoryInterface extends BaseRepositoryInterface
+interface EmployeeRepositoryInterface
 {
     public function listEmployees(): Collection;
 
@@ -25,4 +25,8 @@ interface EmployeeRepositoryInterface extends BaseRepositoryInterface
     public function isAuthUser(Employee $employee): bool;
 
     public function deleteEmployee() : bool;
+
+    public function saveCoverImage(UploadedFile $file) : string;
+
+    public function deleteFile(string $get_data);
 }

@@ -8,7 +8,7 @@
 <div class="slider-area ">
   <!-- Mobile Menu -->
   <div class="slider-active">
-      <div class="single-slider slider-height d-flex align-items-center" data-background="{{ asset('images/front/h1_hero.png')}}">
+      <div class="single-slider slider-height d-flex align-items-center" data-background="{{ asset('img/front/h1_hero.png')}}">
           <div class="container">
               <div class="row">
                   <div class="col-xl-6 col-lg-6 col-md-8">
@@ -24,7 +24,7 @@
               </div>
           </div>
       </div>
-      <div class="single-slider slider-height d-flex align-items-center" data-background="{{ asset('images/front/h1_hero.png')}}">
+      <div class="single-slider slider-height d-flex align-items-center" data-background="{{ asset('img/front/h1_hero.png')}}">
           <div class="container">
               <div class="row">
                   <div class="col-xl-6 col-lg-6 col-md-8">

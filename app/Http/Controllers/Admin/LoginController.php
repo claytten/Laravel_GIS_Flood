@@ -10,7 +10,18 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Login Controller
+    |--------------------------------------------------------------------------
+    |
+    | This controller handles authenticating users for the application and
+    | redirecting them to your home screen. The controller uses a trait
+    | to conveniently provide its functionality to your applications.
+    |
+    */
     use AuthenticatesUsers;
+
     /**
      * Where to redirect users after login.
      *
@@ -19,16 +30,16 @@ class LoginController extends Controller
     protected $redirectTo = '/admin';
 
     /**
-     * Shows the admin login form
+     * Show the application's login form.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\View\View
      */
     public function showLoginForm()
     {
         if (auth()->guard('employee')->check()) {
             return redirect()->route('admin.dashboard');
         }
-
+        
         return view('auth.admin.login');
     }
 
@@ -69,10 +80,16 @@ class LoginController extends Controller
     }
 
     /**
-     * Log the user out of the application.
+     * Where to redirect users after login.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @var string
+     */
+    protected $redirectAfterLogout = '/admin/login';
+
+    /**
+     * Logout, Clear Session, and Return.
+     *
+     * @return void
      */
     public function logout(Request $request)
     {
@@ -82,5 +99,4 @@ class LoginController extends Controller
 
         return redirect()->route('admin.login');
     }
-    
 }

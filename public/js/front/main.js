@@ -211,17 +211,7 @@
       $(this).css("background-image", "url(" + $(this).attr("data-background") + ")")
       });
 
-
-/* 10. WOW active */
-    new WOW().init();
-
 /* 11. Datepicker */
-    
-// 11. ---- Mailchimp js --------//  
-    function mailChimp() {
-      $('#mc_embed_signup').find('form').ajaxChimp();
-    }
-    mailChimp();
 
 
 // 12 Pop Up Img

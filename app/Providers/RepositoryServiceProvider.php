@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
-use App\Models\Customers\Repositories\CustomerRepository;
-use App\Models\Customers\Repositories\Interfaces\CustomerRepositoryInterface;
 use App\Models\Employees\Repositories\EmployeeRepository;
 use App\Models\Employees\Repositories\Interfaces\EmployeeRepositoryInterface;
+use App\Models\Categories\Repositories\CategoryRepository;
+use App\Models\Categories\Repositories\Interfaces\CategoryRepositoryInterface;
+use App\Models\Categories\Subcategories\Repositories\SubcategoryRepository;
+use App\Models\Categories\Subcategories\Repositories\Interfaces\SubcategoryRepositoryInterface;
 use App\Models\Maps\Fields\Repositories\FieldRepository;
 use App\Models\Maps\Fields\Repositories\Interfaces\FieldRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
@@ -21,8 +23,13 @@ class RepositoryServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
-            CustomerRepositoryInterface::class,
-            CustomerRepository::class
+            CategoryRepositoryInterface::class,
+            CategoryRepository::class
+        );
+
+        $this->app->bind(
+            SubcategoryRepositoryInterface::class,
+            SubcategoryRepository::class
         );
 
         $this->app->bind(

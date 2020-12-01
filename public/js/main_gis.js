@@ -1,9 +1,9 @@
 
 "use strict"
 
-var url = window.location.origin + "/";
-var centerView = new L.LatLng(-7.674, 110.624);
-var mymap = L.map('mapid', {
+let url = window.location.origin + "/";
+let centerView = new L.LatLng(-7.674, 110.624);
+let mymap = L.map('mapid', {
   fullscreenControl: true
 }).setView(centerView, 11.20);
 
@@ -16,22 +16,22 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
  * Singleton Variables
  * for better sharable state
  */
-var startPolylineFlag = false;
-var polyline = undefined;
-var pols = [];
-var polygon = undefined;
-var helpLine = undefined;
-var helpPolygon = undefined;
-var firstPoint = L.circleMarker();
+let startPolylineFlag = false;
+let polyline = undefined;
+let pols = [];
+let polygon = undefined;
+let helpLine = undefined;
+let helpPolygon = undefined;
+let firstPoint = L.circleMarker();
 // Check whether the drawing state by button is active
-var drawingState = false;
+let drawingState = false;
 
 // Klaten State
 L.marker(centerView, {
   title: "Kota Klaten"
 }).addTo(mymap);
 
-var reportButton = L.easyButton({
+const reportButton = L.easyButton({
   id: 'report-view-button',
   states: [{
     icon: 'fas fa-file-excel',
@@ -47,7 +47,7 @@ function redirectViewReport(){
   window.location.href = `${url}admin/maps/excel`;
 }
 
-var startDrawingButton = L.easyButton({
+const startDrawingButton = L.easyButton({
   id: 'start-drawing-button',
   states: [{
     icon: 'fa fa-pen',
@@ -78,7 +78,7 @@ var startDrawingButton = L.easyButton({
 });
 startDrawingButton.addTo(mymap);
 
-var undoButton = L.easyButton({
+const undoButton = L.easyButton({
   id: 'undo-polyline',
   states: [{
     icon: 'fa fa-undo',
@@ -92,7 +92,7 @@ var undoButton = L.easyButton({
 undoButton.addTo(mymap);
 undoButton.disable();
 
-var finishButton = L.easyButton({
+const finishButton = L.easyButton({
   id: 'finish-polyline',
   states: [{
     icon: 'fas fa-map',
@@ -110,7 +110,7 @@ var finishButton = L.easyButton({
 finishButton.addTo(mymap);
 finishButton.disable();
 
-function onMapClick(e) {
+const onMapClick = (e) => {
   if(!drawingState) return;
 
   if(startPolylineFlag != true){
@@ -132,7 +132,7 @@ function onMapClick(e) {
   }
 }
 
-function onMapMouseMove(e) {
+const onMapMouseMove = (e) => {
   if(!drawingState || pols.length < 1) return;
 
   let latlngs = [pols[pols.length - 1], [e.latlng.lat, e.latlng.lng]];
@@ -151,15 +151,15 @@ function onMapMouseMove(e) {
   }
 }
 
-function onKeyDownEscape(){
+const onKeyDownEscape = () => {
   cancelPolyline();
 }
 
-function onKeyDownEnter(){
+const onKeyDownEnter = () => {
   drawArea();
 }
 
-function centerizeView(){
+const centerizeView = () => {
   let zoomLevel = 17;
   zoomLevel = mymap.getZoom() < zoomLevel ? zoomLevel : mymap.getZoom();
 
@@ -173,12 +173,12 @@ function centerizeView(){
   );
 }
 
-function startPolyline(latlng){
+const startPolyline = (latlng) => {
   placeFirstPoint(latlng);
   startPolylineFlag = true;
 }
 
-function finishPolyline(){
+const finishPolyline = () => {
   removeMapLayers();
 
   startPolylineFlag = false;
@@ -192,14 +192,14 @@ function finishPolyline(){
   undoButton.disable();
 }
 
-function cancelPolyline(){
+const cancelPolyline = () => {
   if(polyline === undefined) return;
 
   removeMapLayers();
   finishPolyline();
 }
 
-function undoPoint(){
+const undoPoint = () => {
   if(!drawingState) return;
   if(pols.length == 0) return;
 
@@ -218,14 +218,14 @@ function undoPoint(){
   }
 }
 
-function validateArea(){
+const validateArea = () => {
   if(pols.length > 2){
     return true;
   }
   return false;
 }
 
-function drawArea(){
+const drawArea = () => {
   if(polyline === undefined) return;
   if(!validateArea()) return;
 
@@ -250,7 +250,7 @@ function drawArea(){
   polygon.bindPopup(popup).openPopup();
 }
 
-function drawHelpArea(){
+const drawHelpArea = () => {
   if(polyline === undefined) return;
   if(!validateArea()) return;
 
@@ -267,7 +267,7 @@ function drawHelpArea(){
   }
 }
 
-function cancelArea(){
+const cancelArea = () => {
   drawingState = true;
   mymap.removeLayer(polygon);
   finishButton.enable();
@@ -275,18 +275,18 @@ function cancelArea(){
   startDrawingButton.enable();
 }
 
-function confirmArea(color){
+const confirmArea = (color) => {
   popupForm(color);
 }
 
-function removeMapLayers(){
+const removeMapLayers = () => {
   mymap.removeLayer(polyline);
   mymap.removeLayer(helpLine);
   mymap.removeLayer(helpPolygon);
   mymap.removeLayer(firstPoint);
 }
 
-function placeFirstPoint(latlng){
+const placeFirstPoint = (latlng) => {
   let icon = L.divIcon({
     className: 'first-point',
     iconSize: [10, 10],
@@ -302,7 +302,7 @@ function placeFirstPoint(latlng){
   });
 }
 
-function getPopupContent(field){
+const getPopupContent = (field) => {
   return `
     <table>
       <tr>
@@ -353,7 +353,7 @@ function getPopupContent(field){
   `
 }
 
-async function popupForm(color){
+const popupForm = async (color) => {
   const { value: formValues, dismiss } = await Swal.fire({
     title: 'Isi Informasi Area',
     html: `
@@ -373,7 +373,7 @@ async function popupForm(color){
           </tr>
           <tr>
             <th>Ketinggian Air */m</th>
-            <td><input type="number" id="water_level" class="swal2-input" placeholder="Ketinggian Air" min="0"></td>
+            <td><input type="number" id="water_level" class="swal2-input" style="max-width: 100%" placeholder="Ketinggian Air" min="0"></td>
           </tr>
           <tr>
             <th>Jenis Banjir</th>
@@ -391,15 +391,15 @@ async function popupForm(color){
           </tr>
           <tr>
             <th>Kerusakan</th>
-            <td><input type="text" id="damage" class="swal2-input" placeholder="Deskripi Kerusakan"></td>
+            <td><textarea id="damage" class="swal2-textarea" placeholder="Deskripi Kerusakan"></textarea></td>
           </tr>
           <tr>
             <th>Jumlah Korban</th>
-            <td><input type="number" id="civilians" class="swal2-input" placeholder="Jumlah Korban" step="1" min="0"></td>
+            <td><input type="number" id="civilians" class="swal2-input" style="max-width: 100%" placeholder="Jumlah Korban" step="1" min="0"></td>
           </tr>
           <tr>
             <th>Deskripsi Perkiraan Penyebab</th>
-            <td><input type="text" id="description" class="swal2-input" placeholder="Deskripsi Penyebab"></td>
+            <td><textarea id="description" class="swal2-textarea" placeholder="Deskripsi Penyebab"></textarea></td>
           </tr>
           <tr>
             <th>status</th>
@@ -492,7 +492,7 @@ async function popupForm(color){
   finishPolyline();
 }
 
-function sendPolygonJSON(data){
+const sendPolygonJSON = (data) => {
   let polygonGeoJSON = polygon.toGeoJSON(15);
   polygonGeoJSON.properties = {
     color: data.color,
@@ -553,7 +553,7 @@ function sendPolygonJSON(data){
   });
 }
 
-function getGeoJSONData(){
+const getGeoJSONData = () => {
   let wew;
 
   $.ajax({
@@ -577,7 +577,7 @@ function getGeoJSONData(){
   //underbuilding
 }
 
-function onEachFeatureCallback(feature, layer){
+const onEachFeatureCallback = (feature, layer) => {
   if (feature.properties && feature.properties.popupContent) {
     let { aName,eStart,eEnd,wLevel,fType,damage,civil,desc,status,image } = feature.properties.popupContent;
     let content = {

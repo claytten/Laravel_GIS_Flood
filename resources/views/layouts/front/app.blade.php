@@ -16,7 +16,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="{{ config('app.name') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/front/favicon.ico')}}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('img/front/favicon.ico')}}">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('css/front/bootstrap.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/front/animate.min.css')}}">

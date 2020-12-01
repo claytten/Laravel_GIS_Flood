@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,11 @@ use Illuminate\Http\Request;
 |
 */
 
-// Route::middleware('auth:employee')->get('/employee', function (Request $request) {
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+
+Route::namespace('Api')->group(function () {
+  Route::get('/', 'HomeApiController@index')->name('api.index');
+  Route::get('/maps', 'HomeApiController@maps')->name('api.maps');
+});

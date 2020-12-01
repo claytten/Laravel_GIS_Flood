@@ -25,10 +25,10 @@ class MapController extends Controller
     )
     {
         // Spatie ACL
-        $this->middleware('permission:maps-list');
-        $this->middleware('permission:maps-create', ['only' => ['create','store']]);
-        $this->middleware('permission:maps-edit', ['only' => ['edit','update']]);
-        $this->middleware('permission:maps-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:map-list');
+        $this->middleware('permission:map-create', ['only' => ['create','store']]);
+        $this->middleware('permission:map-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:map-delete', ['only' => ['destroy']]);
 
         $this->fieldRepo = $fieldRepository;
     }

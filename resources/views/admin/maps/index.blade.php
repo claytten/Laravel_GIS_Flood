@@ -1,186 +1,214 @@
 @extends('layouts.admin.app',[
-    'menu'  => 'maps',
-    'second_title'  => 'Map'
+  'headers' => 'active',
+  'menu' => 'maps',
+  'title' => 'Map',
+  'first_title' => 'Map',
+  'first_link' => route('admin.view.index')
 ])
-@section('content_header')
-<div class="mdl-grid mdl-cell mdl-cell--9-col-desktop mdl-cell--12-col-tablet mdl-cell--4-col-phone mdl-cell--top">
-    <div class="mdl-cell mdl-cell--12-col-desktop mdl-cell--12-col-tablet mdl-cell--6-col-phone " style="display:flex; justify-content:space-between">
-        <h4 class="mdl-cell mdl-cell--10-col-desktop mdl-cell--10-col-tablet mdl-cell--5-col-phone">Maps</h4>
+
+@section('content_alert')
+<div id="alert-result">
+  @if(Session::get('message'))
+    <div class="alert alert-{{ Session::get('status') }} alert-dismissible fade show alert-result" style="margin-bottom: 0" role="alert">
+      <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+      <span class="alert-text">{{ Session::get('message') }}</span>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
+  @endif
 </div>
 @endsection
 
 @section('plugins_css')
-<link rel="stylesheet" type="text/css" href="{{ asset('plugins/datatable/datatables.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('plugins/sweetalert2/sweetalert2.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('css/fontawesome.min.css')}}">
-<link rel="stylesheet" type="text/css" href="{{ asset('css/custom/datatable.css')}}">
-<link rel="stylesheet" type="text/css" href="{{ asset('css/flatpickr.min.css')}}">
+<link rel="stylesheet" type="text/css" href="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('css/leaflet.css')}}">
 <link rel="stylesheet" type="text/css" href="{{ asset('css/easy-button.css')}}">
+<link rel="stylesheet" type="text/css" href="{{ asset('css/flatpickr.min.css')}}">
 <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+<link rel="stylesheet" type="text/css" href="{{ asset('vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}">
 @endsection
 
 @section('inline_css')
 <style>
 #mapid {
-    height:630px
+    height:750px
 }
 </style>
 @endsection
 
-@section('content_alert')
-<div id="alert-section" class="mdl-cell mdl-cell--12-col-desktop mdl-cell--12-col-tablet mdl-cell--6-col-phone">
-@if(Session::get('message'))
-    <div class="alert-result alert {{ Session::get('status') ? 'color--'.Session::get('status') : ' ' }}">
-        <button type="button" class="close-alert" onclick="removeAlert()">×</button>
-        <i class="material-icons">{{ Session::get('icon') }}</i>
-        {{ Session::get('message') }}
-    </div>
-@endif
-</div>
-@endsection
-
 @section('content_body')
-<div class="mdl-grid mdl-cell mdl-cell--12-col-desktop mdl-cell--12-col-tablet mdl-cell--4-col-phone mdl-cell--top">
-
-    <!-- Map widget-->
-    <div class="mdl-cell mdl-cell--4-col-desktop mdl-cell--6-col-tablet mdl-cell--2-col-phone">
-        <div class="mdl-card mdl-shadow--2dp map">
-            <div id="mapid"></div>
+    <div class="row">
+      <div class="col-lg-12">
+        <!-- Card header -->
+        <div class="card-header">
+          <h3 class="mb-0">Map Management</h3>
         </div>
-    </div>
-
-    <div class="mdl-cell mdl-cell--4-col-desktop mdl-cell--6-col-tablet mdl-cell--2-col-phone">
-        <table class="mdl-cell mdl-cell--12-col-desktop mdl-cell--12-col-tablet mdl-cell--4-col-phone mdl-data-table mdl-js-data-table  mdl-shadow--2dp projects-table" id="mapsTable">
-            <thead>
+        <div class="card">
+          <div id="mapid"></div>
+        </div>
+        <div class="card">
+          <div class="table-responsive py-4">
+            <table class="table table-flush" id="mapsTable">
+              <thead class="thead-light">
                 <tr>
-                    <th class="mdl-data-table__cell--non-numeric">No</th>
-                    <th class="mdl-data-table__cell--non-numeric">Area</th>
-                    <th class="mdl-data-table__cell--non-numeric">Deskripsi</th>
-                    <th class="mdl-data-table__cell--non-numeric">Action</th>
+                  <th>Area Name</th>
+                  <th>Flood Type</th>
+                  <th>Status</th>
+                  <th>Action</th>
                 </tr>
-            </thead>
-            <tbody>
-            <?php $no = 1 ?>
-            @forelse ($getFields as $item)
-                <tr id="rows_null">
-                    <td class="mdl-data-table__cell--non-numeric">{{$no}}</td>
-                    <td class="mdl-data-table__cell--non-numeric">{{$item->area_name}}</td>
-                    <td class="mdl-data-table__cell--non-numeric">{{$item->description}}</td>
-                    <td class="mdl-data-table__cell--non-numeric">
-                        <button id="more_{{$item->id}}" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button--colored-light-blue">Action</button>
-
-                        <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect mdl-shadow--2dp accounts-dropdown mdl-list pull-left"
-                        for="more_{{$item->id}}">
-                            @if(Auth::guard('employee')->user()->can('maps-edit'))
-                            <li>
-                                <button onclick="detailField('{{$item->id}}')" class="mdl-button mdl-js-button mdl-js-ripple-effect button--colored-teal">
-                                    <i class="material-icons">edit</i>
-                                    Edit
-                                </button>
-                            </li>
-                            @endif
-
-                            @if(Auth::guard('employee')->user()->can('maps-delete'))
-                            <li >
-                                <button onclick="deleteField('{{$item->id}}')" class="mdl-button mdl-js-button mdl-js-ripple-effect button--colored-red">
-                                    <i class="material-icons">delete_forever</i>
-                                    Delete
-                                </button>
-                            </li>
-                            @endif
-
-                        </ul>
-                    </td>
+              </thead>
+              <tfoot>
+                <tr>
+                  <th>Area Name</th>
+                  <th>Flood Type</th>
+                  <th>Status</th>
+                  <th>Action</th>
                 </tr>
-            <?php $no++ ?>
-            @empty
-            <tr id="rows_null">
-                <td class="mdl-data-table__cell--non-numeric"></td>
-                <td class="mdl-data-table__cell--non-numeric"></td>
-                <td class="mdl-data-table__cell--non-numeric"></td>
-                <td class="mdl-data-table__cell--non-numeric"></td>
-            </tr>
-            @endforelse
-
-            </tbody>
-        </table>
+              </tfoot>
+              <tbody>
+                @foreach($getFields as $item)
+                    <tr id="rows_{{ $item->id }}">
+                        <td>{{ ucwords($item->area_name) }}</td>
+                        <td>{{ $item->flood_type }}</td>
+                        <td>{{ $item->status }}</td>
+                        <td>
+                          <div class="dropdown">
+                            <a class="btn btn-md btn-icon-only text-primary" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <i class="ni ni-settings-gear-65"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                              <button type="button" onclick="editField('{{$item->id}}')" class="dropdown-item text-warning">Edit</button>
+                              <button type="button" onclick="deleteField('{{$item->id}}')" class="dropdown-item text-danger">Delete</button>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
-
-</div>
 @endsection
 
 @section('plugins_js')
-<script type="text/javascript" src="{{ asset('plugins/datatable/datatables.js') }}"></script>
-<script type="text/javascript" src="{{ asset('plugins/sweetalert2/sweetalert2.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/leaflet.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/leaflet_fullscreen.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/flatpickr.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/easy-button.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/flatpickr.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/main_gis.js') }}"></script>
-@endsection
-
-@section('inline_js')
+<script type="text/javascript" src="{{ asset('vendor/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
 <script>
+  const DatatableButtons = (function() {
 
-var usersTable = $("#mapsTable").DataTable({
-    order: [2, 'asc'],
-    pageLength: 5,
-    aLengthMenu:[5,10,15,25,50],
-    language: {
-        searchPlaceholder: "Type Here.."
-    },
-    columnDefs: [
+    // Variables
+
+    let $dtButtons = $('#mapsTable');
+
+
+    // Methods
+
+    function init($this) {
+
+      // For more options check out the Datatables Docs:
+      // https://datatables.net/extensions/buttons/
+
+      const buttons = ["copy", "print"];
+
+      // Basic options. For more options check out the Datatables Docs:
+      // https://datatables.net/manual/options
+
+      const options = {
+        order: [2, 'asc'],
+        lengthChange: !1,
+        dom: 'Bfrtip',
+        buttons: buttons,
+        // select: {
+        // 	style: "multi"
+        // },
+        language: {
+          paginate: {
+            previous: "<i class='fas fa-angle-left'>",
+            next: "<i class='fas fa-angle-right'>"
+          }
+        },
+        columnDefs: [
         {
             targets: 3,
             orderable: false,
             searchable: false,
         }
-    ]
-});
-var getPerm = {!! json_encode(Auth::guard('employee')->user()->can('maps-create'))!!};
-if(getPerm == false) {
-    startDrawingButton.disable();
-    undoButton.disable();
-    finishButton.disable();
-}
+    ],
+      };
 
-function deleteField(id){
+      // Init the datatable
+      let table = $this.on( 'init.dt', function () {
+        $('.dt-buttons .btn').removeClass('btn-secondary').addClass('btn-sm btn-default');
+        }).DataTable(options);
+    }
+
+
+    // Events
+
+    if ($dtButtons.length) {
+      init($dtButtons);
+    }
+
+  })();
+
+  const deleteField = (id) => {
     $(".alert-result").slideUp(function(){
         $(this).remove();
     });
-    $('#loading').append(`
-        <div id="p7" class="mdl-progress mdl-js-progress mdl-progress__indeterminate progress--colored-light-blue loading"></div>
-    `);
     Swal.fire({
         title: 'Are you sure?',
-        text: "This user status will be set to Destroy, and this field delete anymore!",
+        text: "This field will be set to Destroy!",
         type: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
-        console.log(result.icon);
-        console.log(result.redirect_url);
         if(result.value){
-            $.post("{{ route('admin.api.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE', 'user_action': 'delete'}, function(result){
-                $('#rows_'+id).remove();
-                // Append Alert Result
+          $.post("{{ route('admin.api.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE', 'user_action': 'delete'}, function(result){
+              // Append Alert Result
+              $(`
+              <div class="alert alert-`+ result.status +` alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
+                <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+                <span class="alert-text">`+ result.message +`</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              `).appendTo($("#alert-result")).slideDown("slow", "swing");
+              setTimeout(location.reload.bind(location), 1000);
+          }).fail(function(jqXHR, textStatus, errorThrown){
+
+              $.each(jqXHR.responseJSON.errors, function(key, result) {
                 $(`
-                <div class="alert-result mdl-shadow--2dp alert color--`+result.status+`">
-                    <button type="button" class="close-alert" onclick="removeAlert()">×</button>
-                    <i class="material-icons">`+result.icon+`</i>
-                    `+result.message+`
+                <div class="alert alert-danger alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
+                  <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+                  <span class="alert-text">`+ jqXHR.responseText +`</span>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
                 </div>
-                `).appendTo($("#alert-section")).slideDown("slow", "swing");
-                $('#loading').empty();
-                window.location.href = result.redirect_url;
-            });
+                `).appendTo($("#alert-result")).slideDown("slow", "swing");
+                setTimeout(location.reload.bind(location), 1000);
+              });
+          });
         }
     });
-}
+  }
 
-function get_detail(id) {
+  const getDetail = (id) => {
     return $.ajax({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -202,21 +230,22 @@ function get_detail(id) {
             }
             else {
               $(`
-              <div class="alert-result mdl-shadow--2dp alert color--orange">
-                  <button type="button" class="close-alert" onclick="removeAlert()">×</button>
-                  <i class="material-icons">highlight_off</i>
-                  Terjadi Kesalahan
+              <div class="alert alert-danger alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
+                <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+                <span class="alert-text">Terjadi Kesalahan</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
               </div>
-              `).appendTo($("#alert-section")).slideDown("slow", "swing");
-              $('#loading').empty();
-                console.log('Error', response);
+              `).appendTo($("#alert-result")).slideDown("slow", "swing");
+              console.log('Error', response);
             }
         }
     })
-}
-
-async function detailField(id){
-    get_detail(id).then( async () => {
+  }
+  
+  const editField = async (id) => {
+    getDetail(id).then( async () => {
       const { value: formValues, dismiss } = await Swal.fire({
         title: 'Isi Informasi Area',
         html: `
@@ -236,7 +265,7 @@ async function detailField(id){
               </tr>
               <tr>
                 <th>Ketinggian Air */m</th>
-                <td><input type="number" id="water_level" class="swal2-input" placeholder="Ketinggian Air" min="0" value="${detail.water_level}"></td>
+                <td><input type="number" id="water_level" class="swal2-input" style="max-width: 100%" placeholder="Ketinggian Air" min="0" value="${detail.water_level}"></td>
               </tr>
               <tr>
                 <th>Jenis Banjir</th>
@@ -254,15 +283,15 @@ async function detailField(id){
               </tr>
               <tr>
                 <th>Kerusakan</th>
-                <td><input type="text" id="damage" class="swal2-input" placeholder="Deskripi Kerusakan" value="${detail.damage}"></td>
+                <td><textarea id="damage" class="swal2-textarea" placeholder="Deskripi Kerusakan" value="${detail.damage}"></textarea></td>
               </tr>
               <tr>
                 <th>Jumlah Korban</th>
-                <td><input type="number" id="civilians" class="swal2-input" placeholder="Jumlah Korban" step="1" min="0" value="${detail.civilians}"></td>
+                <td><input type="number" id="civilians" class="swal2-input" style="max-width: 100%" placeholder="Jumlah Korban" step="1" min="0" value="${detail.civilians}"></td>
               </tr>
               <tr>
                 <th>Deskripsi Perkiraan Penyebab</th>
-                <td><input type="text" id="description" class="swal2-input" placeholder="Deskripsi Penyebab" value="${detail.description}"></td>
+                <td><textarea id="description" class="swal2-textarea" placeholder="Deskripsi Penyebab" value="${detail.description}"></textarea></td>
               </tr>
               <tr>
                 <th>status</th>
@@ -283,15 +312,15 @@ async function detailField(id){
               </tr>
             </table>
           </div>
-          `,
-          focusConfirm: false,
-          confirmButtonText: 'Simpan',
-          confirmButtonColor: '#0c0',
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          allowEnterKey: false,
-          showCancelButton: true,
-          cancelButtonText: 'Batalkan',
+        `,
+        focusConfirm: false,
+        confirmButtonText: 'Simpan',
+        confirmButtonColor: '#0c0',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        showCancelButton: true,
+        cancelButtonText: 'Batalkan',
         onOpen: () => {
           flatpickr(".datepickr", {});
         },
@@ -333,10 +362,9 @@ async function detailField(id){
         sendUpdate(data);
       }
     });
-}
+  }
 
-function sendUpdate(data){
-    
+  const sendUpdate = (data) => {
     let formData = new FormData();
     formData.append('id',data.id);
     formData.append('aName',data.aName);
@@ -373,30 +401,33 @@ function sendUpdate(data){
         if(response.code === 200){
           console.log(formData.get('id'));
           console.log(response);
+          // Append Alert Result
           $(`
-          <div class="alert-result mdl-shadow--2dp alert color--`+response.status+`">
-              <button type="button" class="close-alert" onclick="removeAlert()">×</button>
-              <i class="material-icons">`+response.icon+`</i>
-              `+response.message+`
+          <div class="alert alert-`+ response.status +` alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
+            <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+            <span class="alert-text">`+ response.message +`</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
-          `).appendTo($("#alert-section")).slideDown("slow", "swing");
-          $('#loading').empty();
-          window.location.href = response.redirect_url;
+          `).appendTo($("#alert-result")).slideDown("slow", "swing");
+          setTimeout(location.reload.bind(location), 1000);
         }
         else {
           $(`
-          <div class="alert-result mdl-shadow--2dp alert color--orange">
-              <button type="button" class="close-alert" onclick="removeAlert()">×</button>
-              <i class="material-icons">highlight_off</i>
-              Terjadi Kesalahan
-          </div>
-          `).appendTo($("#alert-section")).slideDown("slow", "swing");
-          $('#loading').empty();
+            <div class="alert alert-danger alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
+              <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+              <span class="alert-text">Terjadi Kesalahan</span>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            `).appendTo($("#alert-result")).slideDown("slow", "swing");
+          console.log('Error', response);
           console.log('Error in response', response);
         }
       }
     });
-}
+  }
 </script>
-<script src="{{asset('js/customs/datatable.js')}}"></script>
 @endsection

@@ -2,14 +2,12 @@
 
 namespace App\Models\Employees;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
-class Employee extends Authenticatable implements MustVerifyEmail
+class Employee extends Authenticatable
 {
-    use  Notifiable, HasRoles;
+    use HasRoles;
 
     protected $guard_name = 'employee';
 
@@ -23,6 +21,7 @@ class Employee extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
+        'image',
         'is_active'
     ];
 

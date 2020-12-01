@@ -36,7 +36,6 @@ trait UploadableTrait
      */
     public function storeFile(UploadedFile $file, $folder = 'posts', $disk = 'public')
     {
-        dd($file);
         return $file->store($folder, ['disk' => $disk]);
     }
 }

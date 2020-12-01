@@ -1,107 +1,240 @@
 @extends('layouts.admin.app',[
-    'menu'  => 'accounts',
-    'submenu' => 'admins',
-    'second_title'  => 'Admin'
+  'headers' => 'active',
+  'menu' => 'accounts',
+  'title' => 'Admin',
+  'first_title' => 'Admin',
+  'first_link' => route('admin.dashboard'),
+  'second_title' => 'Edit',
+  'second_link' => route('admin.admin.edit', $employee->id),
+  'third_title'  => $employee->name
 ])
 
 @section('content_alert')
-@if(Session::get('message'))
-    <div class="mdl-cell mdl-cell--12-col-desktop mdl-cell--12-col-tablet mdl-cell--6-col-phone mdl-shadow--2dp alert {{ Session::get('status') ? 'color--'.Session::get('status') : ' ' }}">
-        <button type="button" class="close-alert" onclick="removeAlert()">×</button>
-        <i class="material-icons">{{ Session::get('icon') }}</i>
-        {{ Session::get('message') }}
+<div id="alert-section">
+  @if(Session::get('message'))
+    <div class="alert alert-{{ Session::get('status') }} alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
+      <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+      <span class="alert-text">{{ Session::get('message') }}</span>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
-@endif
+  @endif
+</div>
+@endsection
+
+@section('plugins_css')
+<link rel="stylesheet" href="{{ asset('vendor/select2/dist/css/select2.min.css') }}">
+@endsection
+
+@section('header-right')
+
+  
 @endsection
 
 @section('content_body')
-<main class="mdl-layout__content mdl-color--grey-100">
-    <div class="mdl-card mdl-shadow--2dp employer-form " action="#">
-        <div class="mdl-card__title">
-            <h2>Edit {{ucwords($employee->name)}} Account</h2>
-        </div>
-
-        <div class="mdl-card__supporting-text">
-            <form action="{{ route('admin.admin.update',$employee->id)}}" method="POST" class="form">
-                {{ csrf_field() }}
-                @method('PUT')
-                <div class="form__article">
-                    <h3>Personal data</h3>
-
-                    <div class="mdl-grid">
-                        <div class="mdl-cell mdl-cell--12-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <input name="name" class="mdl-textfield__input" type="text" id="name" value="{{$employee->name}}"/>
-                            <label class="mdl-textfield__label" for="name">First name</label>
-                        </div>
-                        @error('name')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
+<form action="{{ route('admin.admin.update', $employee->id) }}" method="POST" enctype="multipart/form-data">
+  {{ csrf_field() }}
+  <input type="hidden" name="_method" value="PUT" readonly>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="card-wrapper">
+        <!-- Input groups -->
+        <div class="card">
+          <!-- Card header -->
+          <div class="card-header">
+            <div class="row align-items-center">
+              <div class="col-8">
+                <h3 class="mb-0">Employee Information</h3>
+              </div>
+              <div class="col-lg-4 text-right">
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+            </div>
+          </div>
+          <!-- Card body -->
+          <div class="card-body">
+              <!-- Input groups with icon -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <div class="input-group input-group-merge">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                      </div>
+                      <input class="form-control @error('name') is-invalid @enderror" placeholder="Your name" type="text" name="name" value="{{ $employee->name }}">
+                      @error('name')
+                          <div class="invalid-feedback">
+                              {{ $message }}
+                          </div>
+                      @enderror
                     </div>
-
-                    <div class="mdl-grid">
-                        <div class="mdl-cell mdl-cell--12-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <input name="email" class="mdl-textfield__input" type="email" id="email" value="{{$employee->email}}"/>
-                            <label class="mdl-textfield__label" for="email">Email</label>
-                        </div>
-                        @error('email')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-
-                    <div class="mdl-grid">
-                        <div class="mdl-cell mdl-cell--12-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <input name="password" class="mdl-textfield__input" type="password" id="password"/>
-                            <label class="mdl-textfield__label" for="password">New Password</label>
-                        </div>
-                        @error('password')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-
-                    <div class="mdl-grid">
-                        <div class="mdl-cell mdl-cell--12-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <input name="password_confirmation" class="mdl-textfield__input" type="password" id="password_confirmation"/>
-                            <label class="mdl-textfield__label" for="password_confirmation">New Password Confirmation</label>
-                        </div>
-                        @error('password')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-
+                  </div>
                 </div>
-
-                <div class="form__action">
-                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="isInfoReliable">
-                        <input name="agree" type="checkbox" id="isInfoReliable" class="mdl-checkbox__input" required value="check"/>
-                        <span class="mdl-checkbox__label">Agree with Term and Conditions</span>
-                    </label>
-                    <button id="submit_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" onclick="submit_form()">
-                        Submit
-                    </button>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <div class="input-group input-group-merge">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                      </div>
+                      <input class="form-control @error('email') is-invalid @enderror" placeholder="Email address" type="email" name="email" value="{{ $employee->email }}">
+                      @error('email')
+                          <div class="invalid-feedback">
+                              {{ $message }}
+                          </div>
+                      @enderror
+                    </div>
+                  </div>
                 </div>
-            </form>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <div class="input-group input-group-merge">
+                      <input class="form-control @error('password') is-invalid @enderror" placeholder="New Password" type="password" name="password">
+                      <div class="input-group-append">
+                        <span class="input-group-text"><i class="fas fa-eye"></i></span>
+                      </div>
+                      @error('password')
+                          <div class="invalid-feedback">
+                              {{ $message }}
+                          </div>
+                      @enderror
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <div class="input-group input-group-merge">
+                      <input class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="Re-type Password" type="password" name="password_confirmation">
+                      <div class="input-group-append">
+                        <span class="input-group-text"><i class="fas fa-eye"></i></span>
+                      </div>
+                      @error('password_confirmation')
+                          <div class="invalid-feedback">
+                              {{ $message }}
+                          </div>
+                      @enderror
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row images-content">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <div class="input-group input-group-merge">
+                      <div class="custom-file">
+                        <input type="file" accept=".jpg, .jpeg, .png" name="image" class="form-control imgs" onchange="previewImage(this)"id="projectCoverUploads">
+                        <label class="custom-file-label" for="projectCoverUploads">Choose file</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group" style="align-items: center">
+                    <div class="input-group">
+                      <button type="button" class="btn btn-sm btn-danger d-block mb-2 mx-auto remove_preview text-center" onclick="resetPreview(this)" disabled>Reset Preview</button>
+                    </div>
+                    <div class="input-group" style="justify-content: center">
+                      @if(!empty($employee->image))
+                          <img class="img-responsive" width="150px;" style="padding:.25rem;background:#eee;display:block;" src="{{ url('/storage'.'/'.$employee->image) }}">
+                      @else
+                          <img class="img-responsive" width="150px;" style="padding:.25rem;background:#eee;display:block;">
+                      @endif
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
         </div>
-        <div id="p7" class="mdl-progress mdl-js-progress mdl-progress__indeterminate progress--colored-light-blue loading"></div>
+      </div>
     </div>
-</main>
+    <div class="col-lg-6">
+      <div class="card-wrapper">
+        <!-- Roles -->
+        <div class="card">
+          <!-- Card header -->
+          <div class="card-header">
+            <h3 class="mb-0">Roles</h3>
+          </div>
+          <!-- Card body -->
+          <div class="card-body">
+            <select name="role" id="role" class="form-control @error('role') is-invalid @enderror" data-toggle="select">
+                <option value=""></option>
+                @foreach($roles as $item)
+                    <option value="{{$item}}" {{ ($item == $employee->role) ? 'selected' : '' }}>{{$item}}</option>
+                @endforeach
+            </select>
+            @error('role')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+          </div>
+        </div>
+        <!-- Toggle buttons -->
+        <div class="card">
+          <!-- Card header -->
+          <div class="card-header">
+            <h3 class="mb-0">Publish</h3>
+          </div>
+          <!-- Card body -->
+          <div class="card-body">
+            <label class="custom-toggle custom-toggle-default">
+              <input type="checkbox" name="is_active" {{ ($employee->is_active == 1) ? 'checked' : '' }}>
+              <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+@endsection
+
+@section('plugins_js')
+<script src="{{ asset('vendor/select2/dist/js/select2.min.js')}}"></script>
 @endsection
 
 @section('inline_js')
 <script>
-    $(document).ready(function(){
-        $('.loading').hide();
-    });
+  "use strict"
+  $(document).ready(function() {
+      $('#role').select2({
+          'placeholder': 'Select Role',
+      });
+  });
 
-    function submit_form() {
-        $('.loading').show();
+  // Add More Image
+  function previewImage(input){
+        console.log("Preview Image");
+        let preview_image = $(input).closest('.images-content').find('.img-responsive');
+        let preview_button = $(input).closest('.images-content').find('.remove_preview');
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                // console.log(e.target.result);
+                $(preview_image).attr('src', e.target.result);
+                
+            }
+            $('.custom-file-label').html(input.files[0].name);
+            reader.readAsDataURL(input.files[0]);
+            $(preview_button).prop('disabled', false);
+        }
+    }
+
+    function resetPreview(input){
+
+        let preview_image = $(input).closest('.images-content').find('.img-responsive');
+        let preview_button = $(input).closest('.images-content').find('.remove_preview');
+        let preview_form = $(input).closest('.images-content').find('.imgs');
+
+        $('.custom-file-label').html('Choose File');
+        $(preview_image).attr('src', '');
+        $(preview_button).prop('disabled', true);
+        $(preview_form).val('');
     }
 </script>
+    
 @endsection

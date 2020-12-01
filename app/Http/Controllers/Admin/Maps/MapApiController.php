@@ -33,10 +33,10 @@ class MapApiController extends Controller
     )
     {
         // Spatie ACL
-        $this->middleware('permission:maps-list');
-        $this->middleware('permission:maps-create', ['only' => ['create','store']]);
-        $this->middleware('permission:maps-edit', ['only' => ['edit','update']]);
-        $this->middleware('permission:maps-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:map-list');
+        $this->middleware('permission:map-create', ['only' => ['create','store']]);
+        $this->middleware('permission:map-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:map-delete', ['only' => ['destroy']]);
 
         $this->fieldRepo = $fieldRepository;
     }
@@ -79,12 +79,12 @@ class MapApiController extends Controller
         );
 
         $field_response["features"][] = $temp;
-
       }
+
       return response()->json([
-          'code'    => 200,
-          'status'  => 'success',
-          'data'    => $field_response
+        'code'    => 200,
+        'status'  => 'success',
+        'data'    => $field_response
       ]);
     }
 
@@ -96,6 +96,7 @@ class MapApiController extends Controller
      */
     public function store(Request $request)
     {
+      
       if($request->has('id')) {
         $getField = $this->fieldRepo->findFieldById($request->id);
 
@@ -113,6 +114,8 @@ class MapApiController extends Controller
               $updateField->deleteFile($getField->image);
           }
           $request['images'] = $this->fieldRepo->saveCoverImage($request->file('image'));
+        } else {
+          $request['images'] = null;
         }
         $updateField->updateField(
           array_merge($request->all(), ['color' => $setColor])
@@ -123,8 +126,6 @@ class MapApiController extends Controller
         return response()->json([
             'code'        => 200,
             'status'      => 'success',
-            'icon'        => 'check',
-            'status'      => 'green',
             'message'     => $message,
             'redirect_url'=> route('admin.view.index'),
             'data'        => $request->id
@@ -132,7 +133,9 @@ class MapApiController extends Controller
       }
 
       if ($request->hasFile('image') && $request->file('image') instanceof UploadedFile) {
-          $request['images'] = $this->fieldRepo->saveCoverImage($request->file('image'));
+        $request['images'] = $this->fieldRepo->saveCoverImage($request->file('image'));
+      } else {
+        $request['images'] = null;
       }
 
       $this->fieldRepo->createField($request->all());
@@ -141,8 +144,6 @@ class MapApiController extends Controller
       return response()->json([
           'code'        => 200,
           'status'      => 'success',
-          'icon'        => 'check',
-          'status'      => 'green',
           'message'     => $message,
           'redirect_url'=> route('admin.view.index'),
           'data'        => $request->all()
@@ -185,8 +186,8 @@ class MapApiController extends Controller
         }
 
         return response()->json([
-          'icon'        => 'check',
-          'status'      => 'green',
+          'code'        => 200,
+          'status'      => 'success',
           'message'     => $message,
           'redirect_url'=> route('admin.view.index')
       ]);

@@ -2,7 +2,6 @@
 
 namespace App\Models\Maps\Fields\Repositories;
 
-use Jsdecena\Baserepo\BaseRepository;
 use App\Models\Maps\Fields\Field;
 use App\Models\Maps\Fields\Exceptions\FieldNotFoundException;
 use App\Models\Maps\Fields\Repositories\Interfaces\FieldRepositoryInterface;
@@ -14,7 +13,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Database\QueryException;
 
-class FieldRepository extends BaseRepository implements FieldRepositoryInterface
+class FieldRepository implements FieldRepositoryInterface
 {
     use UploadableTrait;
     /**
@@ -24,7 +23,6 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      */
     public function __construct(Field $field)
     {
-        parent::__construct($field);
         $this->model = $field;
     }
 
@@ -36,9 +34,9 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      *
      * @return Collection
      */
-    public function listFields(string $order = 'id', string $sort = 'desc', array $columns = ['*']) : Collection
+    public function listFields(string $order = 'id', string $sort = 'desc', $except = []) : Collection
     {
-        return $this->all($columns, $order, $sort);
+        return $this->model->orderBy($order, $sort)->get()->except($except);
     }
 
     /**
@@ -58,7 +56,7 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
             } else {
                 $setColor = "#f3000e";
             }
-            $field = $this->create([
+            $field = $this->model->create([
                 "color"         => $setColor,
                 "area_name"     => $data['aName'],
                 "event_start"   => $data['eStart'],
@@ -86,6 +84,7 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      *
      */
     private function createGeo($id, $coordinates) {
+
         $geometry = new Geometry();
         $geometry->geo_type     = "Polygon";
         $geometry->coordinates  = $coordinates;
@@ -102,7 +101,7 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
     public function findFieldById(int $id): Field
     {
         try {
-            return $this->findOneOrFail($id);
+            return $this->model->where('id', $id)->firstOrFail();
         } catch (ModelNotFoundException $e) {
             throw new FieldNotFoundException;
         }
@@ -138,7 +137,7 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      */
     public function deleteField() : bool
     {
-        return $this->delete();
+        return $this->model->delete();
     }
 
     /**

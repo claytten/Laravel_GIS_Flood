@@ -7,7 +7,8 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('css/front/extras.1.1.0.min.css') }}">
 <link rel="stylesheet" href="{{ asset('css/front/shards-dashboards.1.1.0.min.css') }}" id="main-stylesheet" data-version="1.1.0">
-<link rel="stylesheet" type="text/css" href="{{ asset('plugins/datatable/datatables.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}">
 @endsection
 
 @section('inline_css')
@@ -21,13 +22,16 @@
 .fa-map {
     color:black;
 }
+#dataTable_wrapper {
+    padding: 1.25rem !important;
+};
 </style>
 @endsection
 
 @section('content_body')
 <div class="slider-area ">
     <!-- Mobile Menu -->
-    <div class="single-slider slider-height2 d-flex align-items-center" data-background="{{asset('images/front/Industries_hero.jpg')}}">
+    <div class="single-slider slider-height2 d-flex align-items-center" data-background="{{asset('img/front/Industries_hero.jpg')}}">
         <div class="container">
             <div class="row">
                 <div class="col-xl-12">
@@ -100,23 +104,73 @@
 @endsection
 
 @section('plugins_js')
-<script type="text/javascript" src="{{ asset('plugins/datatable/datatables.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
 @endsection
 
 @section('inline_js')
 <script>
-var datasTable = $("#dataTable").DataTable({
-    order: [0, 'asc'],
-    pageLength: 5,
-    aLengthMenu:[5,10,15,25,50],
-    columnDefs: [
+const DatatableButtons = (function() {
+
+    // Variables
+
+    var $dtButtons = $('#dataTable');
+
+
+    // Methods
+
+    function init($this) {
+
+    // For more options check out the Datatables Docs:
+    // https://datatables.net/extensions/buttons/
+
+    var buttons = ["copy", "print"];
+
+    // Basic options. For more options check out the Datatables Docs:
+    // https://datatables.net/manual/options
+
+    var options = {
+        order: [7, 'asc'],
+        lengthChange: !1,
+        dom: 'Bfrtip',
+        buttons: buttons,
+        // select: {
+        // 	style: "multi"
+        // },
+        language: {
+        paginate: {
+            previous: "<i class='fas fa-angle-left'>",
+            next: "<i class='fas fa-angle-right'>"
+        }
+        },
+        columnDefs: [
         {
             targets: 8,
             orderable: false,
             searchable: false,
         }
     ],
-    responsive: true
-});
+    };
+
+    // Init the datatable
+
+    var table = $this.on( 'init.dt', function () {
+        $('.dt-buttons .btn').removeClass('btn-secondary').addClass('btn-sm btn-default');
+        }).DataTable(options)
+    }
+
+
+    // Events
+
+    if ($dtButtons.length) {
+        init($dtButtons);
+        $('.dt-buttons').css({"position": "absolute", "display" : "block"});
+    }
+
+})();
 </script>
 @endsection

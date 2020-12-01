@@ -2,17 +2,20 @@
 
 namespace App\Models\Employees\Repositories;
 
-use Jsdecena\Baserepo\BaseRepository;
 use App\Models\Employees\Employee;
 use App\Models\Employees\Exceptions\EmployeeNotFoundException;
 use App\Models\Employees\Repositories\Interfaces\EmployeeRepositoryInterface;
+use App\Models\Tools\UploadableTrait;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\File;
 
-class EmployeeRepository extends BaseRepository implements EmployeeRepositoryInterface
+class EmployeeRepository implements EmployeeRepositoryInterface
 {
+    use UploadableTrait;
     /**
      * EmployeeRepository constructor.
      *
@@ -20,7 +23,6 @@ class EmployeeRepository extends BaseRepository implements EmployeeRepositoryInt
      */
     public function __construct(Employee $employee)
     {
-        parent::__construct($employee);
         $this->model = $employee;
     }
 
@@ -48,7 +50,7 @@ class EmployeeRepository extends BaseRepository implements EmployeeRepositoryInt
     {
         $data['password'] = Hash::make($data['password']);
         $this->model->assignRole($data['role']);
-        return $this->create($data);
+        return $this->model->create($data);
     }
 
     /**
@@ -61,7 +63,7 @@ class EmployeeRepository extends BaseRepository implements EmployeeRepositoryInt
     public function findEmployeeById(int $id): Employee
     {
         try {
-            return $this->findOneOrFail($id);
+            return $this->model->where('id', $id)->firstOrFail();
         } catch (ModelNotFoundException $e) {
             throw new EmployeeNotFoundException;
         }
@@ -76,11 +78,9 @@ class EmployeeRepository extends BaseRepository implements EmployeeRepositoryInt
      */
     public function updateEmployee(array $params): bool
     {
-        if (isset($params['password'])) {
-            $params['password'] = Hash::make($params['password']);
-        }
+        $filtered = collect($params)->all();
 
-        return $this->update($params);
+        return $this->model->update($filtered);
     }
 
     /**
@@ -129,6 +129,26 @@ class EmployeeRepository extends BaseRepository implements EmployeeRepositoryInt
      */
     public function deleteEmployee() : bool
     {
-        return $this->delete();
+        return $this->model->delete();
+    }
+
+    /**
+     * @param UploadedFile $file
+     * @return string
+     */
+    public function saveCoverImage(UploadedFile $file) : string
+    {
+        return $file->store('employees', ['disk' => 'public']);
+    }
+
+    /**
+     * Destroye File on Storage
+     *
+     * @param string $get_data
+     *
+     */
+    public function deleteFile(string $get_data)
+    {
+        return File::delete("storage/{$get_data}");
     }
 }

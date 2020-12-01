@@ -8,7 +8,7 @@
                         <div class="row d-flex justify-content-between align-items-center">
                             <div class="header-info-left">
                                 <ul>     
-                                    <li><i class="fas fa-map-marker-alt"></i>Jl.Veteran no 31,Semarang</li>
+                                    <li><i class="fas fa-map-marker-alt"></i>Lorem Ipsum</li>
                                     <li><i class="fas fa-envelope"></i>info@sigapbanjir.com</li>
                                 </ul>
                             </div>
@@ -30,7 +30,7 @@
                         <!-- Logo -->
                         <div class="col-xl-2 col-lg-1 col-md-1">
                             <div class="logo">
-                              <a href="{{ route('home')}}"><img src="{{ asset('images/front/logo1.png')}}" alt=""></a>
+                              <a href="{{ route('home')}}"><img src="{{ asset('img/front/logo1.png')}}" alt=""></a>
                             </div>
                         </div>
                         <div class="col-xl-8 col-lg-8 col-md-8">
@@ -41,7 +41,6 @@
                                         <li><a href="{{ route('home')}}" class="nav-link {{ !empty($navbar) ? ($navbar == "home" ? 'active' : '') : '' }}">Home</a></li>
                                         <li><a href="{{ route('maps')}}" class="nav-link {{ !empty($navbar) ? ($navbar == "maps" ? 'active' : '') : '' }}">Map</a></li>
                                         <li><a href="{{ route('data')}}" class="nav-link {{ !empty($navbar) ? ($navbar == "data" ? 'active' : '') : '' }}">Data</a></li>
-                                        <li><a href="{{ route('about')}}" class="nav-link {{ !empty($navbar) ? ($navbar == "about" ? 'active' : '') : '' }}">About Us</a></li>
                                     </ul>
                                 </nav>
                             </div>
