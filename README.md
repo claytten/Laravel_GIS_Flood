@@ -17,7 +17,7 @@
 ![data](https://user-images.githubusercontent.com/38114768/79122770-c4606300-7dc2-11ea-95b3-0f70e4dcd655.jpg)
 
 ### Requirement
- * `PHP 7.3>`
+ * `PHP 7.4`
  * `NGINX/Apache (if you run on localhost, just use php artisan serve on console)`
  * `Mysql`
  * `composer`
@@ -29,6 +29,7 @@
 * `php artisan key:generate`
 * `php artisan migrate --seed`
 * `php artisan storage:link`
+* `php artisan serve`
 
  ### Features
 - \[x] System Login Admin
@@ -38,14 +39,6 @@
 - \[ ] API for Mobile
 - \[ ] Security API
 - \[ ] Hosting
-
-## Setup
-* `duplicate .env-example and rename to .env`
-* `Insert Identity Database`
-* `composer install`
-* `php artisan key:generate`
-* `php artisan migrate --seed`
-* `php artisan storage:link`
 
 ## Features
 * `CRUD Role,Permission and Admin`
